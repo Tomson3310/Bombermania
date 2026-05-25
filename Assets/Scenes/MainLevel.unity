@@ -4167,7 +4167,7 @@ CompositeCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 33d3802f2d4291d439700ec4189fb19c, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -4220,7 +4220,7 @@ Rigidbody2D:
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 33d3802f2d4291d439700ec4189fb19c, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -4734,8 +4734,8 @@ MonoBehaviour:
   - {fileID: 6335763416406092919, guid: a0bdd307930782147ac7dedf1c1e980e, type: 3}
   - {fileID: 6335763416406092919, guid: a1158a2fbb893bb409b388e18c378291, type: 3}
   enemyPrefab: {fileID: 4569405894446552970, guid: 5063a8b4870ab3f43bf7f4a060d3531b, type: 3}
-  enemiesToSpawn: 1
-  cratesToSpawn: 3
+  enemiesToSpawn: 5
+  cratesToSpawn: 10
 --- !u!4 &2133954613
 Transform:
   m_ObjectHideFlags: 0

@@ -27,11 +27,11 @@ public class GameManager : MonoBehaviour
 
     public void RegisterEnemy() { enemyCount++; }
 
-    public void EnemyDefeated(Vector3 deathPosition)
+    public void EnemyDefeated(Vector3 deathPosition, int points)
     {
         enemyCount--;
 
-        score += 100;
+        score += points;
         UIManager.Instance.UpdateScore(score);
 
         Debug.Log("Enemy defeated! Remaining: " + enemyCount);

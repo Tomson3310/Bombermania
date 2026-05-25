@@ -93,21 +93,21 @@ public class PlayerStatsTests
     {
         // Assert: Check initial property values
         int initialLives = GetPrivateField<int>("lives");
-        int initialFireRadius = GetPrivateField<int>("fireRadius");
+        int initialFireRange = GetPrivateField<int>("fireRange");
         int initialMaxBombs = GetPrivateField<int>("maxBombs");
         bool initialHasDetonator = GetPrivateField<bool>("hasDetonator");
 
         Assert.AreEqual(3, initialLives, "Initial lives should be 3");
-        Assert.AreEqual(1, initialFireRadius, "Initial fireRadius should be 1");
+        Assert.AreEqual(1, initialFireRange, "Initial fireRange should be 1");
         Assert.AreEqual(1, initialMaxBombs, "Initial maxBombs should be 1");
         Assert.AreEqual(false, initialHasDetonator, "Initial hasDetonator should be false");
     }
 
     [Test]
-    public void FireRadius_ReturnsCorrectValue()
+    public void FireRange_ReturnsCorrectValue()
     {
         // Assert
-        Assert.AreEqual(1, playerStats.FireRange, "FireRadius property should return initial value of 1");
+        Assert.AreEqual(1, playerStats.FireRange, "FireRange property should return initial value of 1");
     }
 
     [Test]

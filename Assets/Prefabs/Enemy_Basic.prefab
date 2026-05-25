@@ -58,7 +58,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
@@ -74,16 +74,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f43d30b698e3624ca0f5887368fa311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
-  speed: 1.5
-  spontaneousTurnChance: 0.1
+  data: {fileID: 11400000, guid: 63f9a345103e36f41bf5850d88af5c2f, type: 2}
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 1728
   sensorLength: 0.55
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  killRadius: 0.3
 --- !u!58 &3855152082514402660
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -201,7 +196,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2044889691954185585, guid: a70319cc20996b54a807151fa1914df1, type: 3}
+  m_Sprite: {fileID: 4448715427215634006, guid: 5870301502383334a8b891ae449c4458, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

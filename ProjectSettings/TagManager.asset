@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Bomb
+  - Crate
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - SolidWall
   - Crate
   - Player
-  - EnemyBasic
+  - Enemy
   - Bomb
   - 
   - 

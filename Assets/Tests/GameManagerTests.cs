@@ -184,7 +184,7 @@ public class GameManagerTests
         int initialEnemyCount = gameManager.enemyCount;
 
         // Act
-        gameManager.EnemyDefeated(Vector3.zero);
+        gameManager.EnemyDefeated(Vector3.zero, 100);
         yield return null;
 
         // Assert
@@ -198,7 +198,7 @@ public class GameManagerTests
         int initialScore = gameManager.score;
 
         // Act
-        gameManager.EnemyDefeated(Vector3.zero);
+        gameManager.EnemyDefeated(Vector3.zero, 100);
         yield return null;
 
         // Assert
@@ -214,11 +214,11 @@ public class GameManagerTests
         gameManager.RegisterEnemy();
 
         // Act
-        gameManager.EnemyDefeated(Vector3.zero);
+        gameManager.EnemyDefeated(Vector3.zero, 100);
         yield return null;
-        gameManager.EnemyDefeated(Vector3.zero);
+        gameManager.EnemyDefeated(Vector3.zero, 100);
         yield return null;
-        gameManager.EnemyDefeated(Vector3.zero);
+        gameManager.EnemyDefeated(Vector3.zero, 100);
         yield return null;
 
         // Assert
@@ -237,7 +237,7 @@ public class GameManagerTests
         gameManager.keyPrefab = keyPrefab;
 
         // Act
-        gameManager.EnemyDefeated(new Vector3(5f, 5f, 0f));
+        gameManager.EnemyDefeated(new Vector3(5f, 5f, 0f), 100);
         yield return null;
 
         // Assert
@@ -266,7 +266,7 @@ public class GameManagerTests
         gameManager.keyPrefab = keyPrefab;
 
         // Act
-        gameManager.EnemyDefeated(Vector3.zero);
+        gameManager.EnemyDefeated(Vector3.zero, 100);
         yield return null;
         yield return null;  // Extra wait to ensure no Key spawns
 
@@ -290,7 +290,7 @@ public class GameManagerTests
         Vector3 deathPosition = new Vector3(3.7f, 4.9f, 0f);
 
         // Act
-        gameManager.EnemyDefeated(deathPosition);
+        gameManager.EnemyDefeated(deathPosition, 100);
         yield return null;
 
         // Assert
@@ -357,7 +357,7 @@ public class GameManagerTests
         gameManager.RegisterEnemy();
 
         // Act: Defeat first enemy
-        gameManager.EnemyDefeated(Vector3.zero);
+        gameManager.EnemyDefeated(Vector3.zero, 100);
         yield return null;
         yield return null;  // Extra wait
 
@@ -366,7 +366,7 @@ public class GameManagerTests
         Assert.IsNull(spawnedKeyObj, "Key should NOT be spawned with enemies remaining");
 
         // Act: Defeat second enemy
-        gameManager.EnemyDefeated(Vector3.zero);
+        gameManager.EnemyDefeated(Vector3.zero, 100);
         yield return null;
         yield return null;  // Extra wait
 

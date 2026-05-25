@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8705abd49d057f844b17093651bc3d52, type: 3}
+  m_Name: GhostData
+  m_EditorClassIdentifier: GameScripts::EnemyData
+  enemyName: Ghost
+  enemySprite: {fileID: 4448715427215634006, guid: 5870301502383334a8b891ae449c4458, type: 3}
+  speed: 2
+  spontaneousTurnChance: 0.1
+  canPassCrates: 1
+  canPassBombs: 1
+  canPassEnemies: 1
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  killRadius: 0.3
+  sortingOrder: 5

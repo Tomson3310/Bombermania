@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8705abd49d057f844b17093651bc3d52, type: 3}
+  m_Name: BasicSlimeData
+  m_EditorClassIdentifier: GameScripts::EnemyData
+  enemyName: Basic Slime
+  enemySprite: {fileID: -2044889691954185585, guid: a70319cc20996b54a807151fa1914df1, type: 3}
+  speed: 2
+  spontaneousTurnChance: 0.1
+  canPassCrates: 0
+  canPassBombs: 0
+  canPassEnemies: 0
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  killRadius: 0.3
+  sortingOrder: 3

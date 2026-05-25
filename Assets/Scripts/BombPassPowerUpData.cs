@@ -7,7 +7,7 @@ public class BombPassPowerUpData : PowerUpData
     {
         stats.EnableBombPass();
         
-        UIManager.Instance.AddToInventory(uiIcon);
+        UIManager.Instance.AddToInventory(UiIcon);
         UIManager.Instance.ActivateLevelPowerUp();
     }
 }

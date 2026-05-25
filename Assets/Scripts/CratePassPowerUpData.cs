@@ -7,7 +7,7 @@ public class CratePassPowerUpData : PowerUpData
     {
         stats.EnableCratePass();
 
-        UIManager.Instance.AddToInventory(uiIcon);
+        UIManager.Instance.AddToInventory(UiIcon);
         UIManager.Instance.ActivateLevelPowerUp();
     }
 }

@@ -7,7 +7,7 @@ public class DetonatorData: PowerUpData
     {
         stats.EnableDetonator();
 
-        UIManager.Instance.AddToInventory(uiIcon);
+        UIManager.Instance.AddToInventory(UiIcon);
         UIManager.Instance.ActivateLevelPowerUp();
     }
 }
