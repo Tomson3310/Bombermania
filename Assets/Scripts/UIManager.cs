@@ -51,6 +51,7 @@ public class UIManager : MonoBehaviour
 
     public void AddToInventory(Sprite powerUpSprite)
     {
+        if (powerUpSprite == null) return;
         if (currentInventoryIndex < inventoryIcons.Length)
         {
             inventoryIcons[currentInventoryIndex].gameObject.SetActive(true);

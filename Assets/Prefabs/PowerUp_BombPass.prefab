@@ -183,4 +183,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf722a29b7f48bc4d82c524525f79153, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PowerUp
-  type: 5
+  data: {fileID: 11400000, guid: 9a81736f790dbcf4780c2b1bc8293452, type: 2}

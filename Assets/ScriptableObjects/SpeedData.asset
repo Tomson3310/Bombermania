@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c37fd31cf5f8144a95a052107229492, type: 3}
+  m_Name: SpeedData
+  m_EditorClassIdentifier: GameScripts::SpeedPowerUpData
+  powerUpName: Move Speed Boost
+  uiIcon: {fileID: 6629503220586895099, guid: 846ab954b3c854f48881ae7f03cacc10, type: 3}
+  speedMultiplier: 1.25

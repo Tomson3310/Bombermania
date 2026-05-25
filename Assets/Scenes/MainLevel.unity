@@ -2878,17 +2878,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
   lives: 3
-  fireRadius: 1
+  fireRange: 1
   maxBombs: 1
   hasDetonator: 0
   hasCratePass: 1
   hasBombPass: 0
   playerMoveSpeed: 3
-  speedBoost: 1.5
-  detonatorSprite: {fileID: -101301038653176949, guid: 7ee57e53c6fac2c43b701a3a37c137af, type: 3}
-  speedBoostSprite: {fileID: 6629503220586895099, guid: 846ab954b3c854f48881ae7f03cacc10, type: 3}
-  cratePassSprite: {fileID: 2447051656490686184, guid: 05540af6d2923a743a5030d42241c959, type: 3}
-  bombPassSprite: {fileID: 8153154137128084581, guid: 8c21eacc2b77f584db3cdb1ce6b411c5, type: 3}
 --- !u!1 &1205880733
 GameObject:
   m_ObjectHideFlags: 0

@@ -107,7 +107,7 @@ public class PlayerStatsTests
     public void FireRadius_ReturnsCorrectValue()
     {
         // Assert
-        Assert.AreEqual(1, playerStats.FireRadius, "FireRadius property should return initial value of 1");
+        Assert.AreEqual(1, playerStats.FireRange, "FireRadius property should return initial value of 1");
     }
 
     [Test]
@@ -170,22 +170,22 @@ public class PlayerStatsTests
     public void IncreaseFireRadius_IncreasesFireRadiusByOne()
     {
         // Act
-        playerStats.IncreaseFireRadius();
+        playerStats.IncreaseFireRadius(1);
 
         // Assert
-        Assert.AreEqual(2, playerStats.FireRadius, "FireRadius should increase from 1 to 2");
+        Assert.AreEqual(2, playerStats.FireRange, "FireRadius should increase from 1 to 2");
     }
 
     [Test]
     public void IncreaseFireRadius_CanBeCalledMultipleTimes()
     {
         // Act
-        playerStats.IncreaseFireRadius();
-        playerStats.IncreaseFireRadius();
-        playerStats.IncreaseFireRadius();
+        playerStats.IncreaseFireRadius(1);
+        playerStats.IncreaseFireRadius(1);
+        playerStats.IncreaseFireRadius(1);
 
         // Assert
-        Assert.AreEqual(4, playerStats.FireRadius, "FireRadius should increase to 4 after three increases");
+        Assert.AreEqual(4, playerStats.FireRange, "FireRadius should increase to 4 after three increases");
     }
 
     // --- INCREASE MAX BOMBS TESTS ---
@@ -194,7 +194,7 @@ public class PlayerStatsTests
     public void IncreaseMaxBombs_IncreasesMaxBombsByOne()
     {
         // Act
-        playerStats.IncreaseMaxBombs();
+        playerStats.IncreaseMaxBombs(1);
 
         // Assert
         Assert.AreEqual(2, playerStats.MaxBombs, "MaxBombs should increase from 1 to 2");
@@ -204,9 +204,9 @@ public class PlayerStatsTests
     public void IncreaseMaxBombs_CanBeCalledMultipleTimes()
     {
         // Act
-        playerStats.IncreaseMaxBombs();
-        playerStats.IncreaseMaxBombs();
-        playerStats.IncreaseMaxBombs();
+        playerStats.IncreaseMaxBombs(1);
+        playerStats.IncreaseMaxBombs(1);
+        playerStats.IncreaseMaxBombs(1);
 
         // Assert
         Assert.AreEqual(4, playerStats.MaxBombs, "MaxBombs should increase to 4 after three increases");
@@ -241,8 +241,8 @@ public class PlayerStatsTests
     public void AllModifiers_CanBeAppliedTogether()
     {
         // Act
-        playerStats.IncreaseFireRadius();
-        playerStats.IncreaseMaxBombs();
+        playerStats.IncreaseFireRadius(1);
+        playerStats.IncreaseMaxBombs(1);
         playerStats.EnableDetonator();
         playerStats.LoseLife();
 
@@ -250,7 +250,7 @@ public class PlayerStatsTests
         int currentLives = GetPrivateField<int>("lives");
 
         Assert.AreEqual(2, currentLives, "Lives should be 2");
-        Assert.AreEqual(2, playerStats.FireRadius, "FireRadius should be 2");
+        Assert.AreEqual(2, playerStats.FireRange, "FireRadius should be 2");
         Assert.AreEqual(2, playerStats.MaxBombs, "MaxBombs should be 2");
         Assert.AreEqual(true, playerStats.HasDetonator, "HasDetonator should be true");
     }

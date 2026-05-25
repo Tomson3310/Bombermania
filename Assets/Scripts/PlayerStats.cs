@@ -4,21 +4,14 @@ public class PlayerStats : MonoBehaviour
 {
     [Header("Player Stats")]
     [SerializeField] private int lives = 3;
-    [SerializeField] private int fireRadius = 1;
+    [SerializeField] private int fireRange = 1;
     [SerializeField] private int maxBombs = 1;
     [SerializeField] private bool hasDetonator = false;
     [SerializeField] private bool hasCratePass = false;
     [SerializeField] private bool hasBombPass = false;
     [SerializeField] private float playerMoveSpeed = 5f;
-    [SerializeField] private float speedBoost = 1.25f;
 
-    [Header("PowerUp UI Graphics")]
-    public Sprite detonatorSprite;
-    public Sprite speedBoostSprite;
-    public Sprite cratePassSprite;
-    public Sprite bombPassSprite;
-
-    public int FireRadius => fireRadius;
+    public int FireRange => fireRange;
     public int MaxBombs => maxBombs;
     public bool HasDetonator => hasDetonator;
     public float PlayerMoveSpeed => playerMoveSpeed;
@@ -32,7 +25,7 @@ public class PlayerStats : MonoBehaviour
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Bomb"), false);
 
         UIManager.Instance.UpdateLives(lives);
-        UIManager.Instance.UpdateStats(maxBombs, fireRadius);
+        UIManager.Instance.UpdateStats(maxBombs, fireRange);
     }
 
     public void LoseLife()
@@ -42,61 +35,41 @@ public class PlayerStats : MonoBehaviour
         if (lives <= 0) { Debug.Log("Game Over!"); }
     }
 
-    public void IncreaseFireRadius()
+    public void IncreaseFireRadius(int amount)
     {
-        fireRadius++;
-        UIManager.Instance.UpdateStats(maxBombs, fireRadius);
-
-        UIManager.Instance.ActivateLevelPowerUp();
+        fireRange += amount;
     }
 
-    public void IncreaseMaxBombs()
+    public void IncreaseMaxBombs(int amount)
     {
-        maxBombs++;
-        UIManager.Instance.UpdateStats(maxBombs, fireRadius);
-
-        UIManager.Instance.ActivateLevelPowerUp();
+        maxBombs += amount;
     }
 
     public void EnableDetonator()
     {
         hasDetonator = true;
-        UIManager.Instance.AddToInventory(detonatorSprite);
-        UIManager.Instance.ActivateLevelPowerUp();
     }
 
-    public void IncreasePlayerSpeed()
+    public void IncreasePlayerSpeed(float multiplier)
     {
-        playerMoveSpeed *= speedBoost;
-        UIManager.Instance.AddToInventory(speedBoostSprite);
-        UIManager.Instance.ActivateLevelPowerUp();
+        playerMoveSpeed *= multiplier;
     }
 
     public void EnableCratePass()
-    {
-        // This method would set a flag to allow the player to pass through crates.
+    {        
         hasCratePass = true;
-
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Crate"), true);
-
-        UIManager.Instance.AddToInventory(cratePassSprite);
-        UIManager.Instance.ActivateLevelPowerUp();
     }
 
     public void EnableBombPass()
     {
-        // This method would set a flag to allow the player to pass through bombs.
-        hasBombPass = true;
-        
+        hasBombPass = true;        
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Bomb"), true);
-        
-        UIManager.Instance.AddToInventory(bombPassSprite);
-        UIManager.Instance.ActivateLevelPowerUp();
     }
 
-    public void IncreaseLives()
+    public void IncreaseLives(int amount)
     {
-        lives++;
+        lives += amount;
         UIManager.Instance.UpdateLives(lives);
     }
 }

@@ -50,7 +50,7 @@ public class BombSpawner : MonoBehaviour
         Bomb bombScript = spawnedBomb.GetComponent<Bomb>();
         if (bombScript != null)
         {
-            bombScript.InitializeBomb(this, playerStats.FireRadius, playerStats.HasDetonator);
+            bombScript.InitializeBomb(this, playerStats.FireRange, playerStats.HasDetonator);
             activeBombs.Add(bombScript);
         }
     }
