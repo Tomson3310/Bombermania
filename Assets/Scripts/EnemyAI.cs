@@ -33,10 +33,8 @@ public class EnemyAI : MonoBehaviour
     {
         if (isDead) return;
 
-        // 1. RUCH
         rb.linearVelocity = currentDirection * speed;
 
-        // 2. SZUKANIE GRACZA (Zabijanie)
         Collider2D playerCollider = Physics2D.OverlapCircle(transform.position, killRadius, playerLayer);
         if (playerCollider != null)
         {
@@ -44,7 +42,6 @@ public class EnemyAI : MonoBehaviour
             if (player != null) player.Die();
         }
 
-        // 3. LOGIKA SIATKI I SKRZYŻOWAŃ
         CheckIntersection();
     }
 
@@ -55,23 +52,19 @@ public class EnemyAI : MonoBehaviour
         Vector2Int currentTile = new Vector2Int(tileX, tileY);
         Vector2 tileCenter = new Vector2(tileX + 0.5f, tileY + 0.5f);
 
-        // Kiedy jest idealnie na środku kafelka
         if (Vector2.Distance(transform.position, tileCenter) < 0.05f)
         {
-            // Zabezpieczenie przed paraliżem. 
-            // Ignorujemy pamięć kafelka, jeśli potwór stoi w miejscu (jest zablokowany i czeka na otwarcie drogi).
+            // Prevent re-evaluation on same tile if blocked (waiting for path to open)
             if (currentTile == lastDecisionTile && currentDirection != Vector2.zero) return;
 
             lastDecisionTile = currentTile;
-
-            // Ustawienie idealnie na środku osi
             rb.position = tileCenter;
 
             List<Vector2> availableDirections = GetAvailableDirections(tileCenter);
 
             if (availableDirections.Count == 0)
             {
-                currentDirection = Vector2.zero; // Utknął w pułapce ze wszystkich stron
+                currentDirection = Vector2.zero;
                 return;
             }
 
@@ -79,7 +72,6 @@ public class EnemyAI : MonoBehaviour
 
             if (!canGoForward)
             {
-                // MUSI SKRĘCIĆ LUB WYBRAĆ NOWY KIERUNEK Z POSTOJU
                 List<Vector2> options = new List<Vector2>(availableDirections);
 
                 if (options.Count > 1 && currentDirection != Vector2.zero)
@@ -91,7 +83,7 @@ public class EnemyAI : MonoBehaviour
             }
             else
             {
-                // MOŻE IŚĆ PROSTO - Szansa na spontaniczny skręt w alejkę (10%)
+                // Chance to spontaneously turn into side paths
                 if (Random.value <= spontaneousTurnChance)
                 {
                     List<Vector2> sidePaths = new List<Vector2>();
@@ -108,7 +100,7 @@ public class EnemyAI : MonoBehaviour
                     {
                         currentDirection = sidePaths[Random.Range(0, sidePaths.Count)];
                     }
-                    else if (Random.value <= 0.1f) // 1% na losowe zawrócenie w ślepym korytarzu
+                    else if (Random.value <= 0.1f)
                     {
                         currentDirection = -currentDirection;
                     }
@@ -117,21 +109,19 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    // Inteligentne odbijanie od przeszkód (Ignoruje szorowanie po ścianach)
+    // Reverse direction on head-on collision with obstacles
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (currentDirection == Vector2.zero) return;
 
-        // Sprawdzamy kąt uderzenia
         foreach (ContactPoint2D contact in collision.contacts)
         {
-            // Vector2.Dot sprawdza, pod jakim kątem potwór uderzył w przeszkodę.
-            // Wynik bliski -1 oznacza, że uderzył w nią centralnie z przodu.
+            // Vector2.Dot determines collision angle: value < -0.5 indicates head-on impact
             if (Vector2.Dot(contact.normal, currentDirection) < -0.5f)
             {
-                currentDirection = -currentDirection; // Odwrót
-                lastDecisionTile = new Vector2Int(-9999, -9999); // Reset pamięci, by podjął decyzję na najbliższej kratce
-                return; // Wystarczy, że wykryliśmy jedno czołowe zderzenie
+                currentDirection = -currentDirection;
+                lastDecisionTile = new Vector2Int(-9999, -9999);
+                return;
             }
         }
     }
@@ -168,7 +158,6 @@ public class EnemyAI : MonoBehaviour
     private Vector2 GetRandomValidDirection(Vector2 position)
     {
         List<Vector2> available = GetAvailableDirections(position);
-        // Jeśli zrespił się w pułapce, bezpiecznie zwraca (0,0), zamiast na siłę przeć do góry
         if (available.Count > 0) return available[Random.Range(0, available.Count)];
         return Vector2.zero;
     }

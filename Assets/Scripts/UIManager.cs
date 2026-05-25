@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    // Singleton dla interfejsu
     public static UIManager Instance { get; private set; }
 
     [Header("Top Panel")]
@@ -12,18 +11,18 @@ public class UIManager : MonoBehaviour
     public TMP_Text scoreText;
     public TMP_Text livesText;
     public Image keyIcon;
-    public Image powerUpLevelIcon; // Ikonka znaku zapytania
-    public Sprite keyColorSprite;  // Kolorowy klucz (przeciągniesz w Inspektorze)
-    public Sprite powerUpColorSprite; // Kolorowy ptaszek (przeciągniesz w Inspektorze)
+    public Image powerUpLevelIcon;
+    public Sprite keyColorSprite;
+    public Sprite powerUpColorSprite;
 
     [Header("Bottom Panel - Stats")]
     public TMP_Text fireRadiusText;
     public TMP_Text maxBombsText;
 
     [Header("Bottom Panel - Inventory")]
-    public Image[] inventoryIcons; // Przeciągniesz tu obiekty Icon_Item z pustych slotów
-    public GameObject[] inventoryCircles; // Przeciągniesz tu obiekty Circle_BG (kółka z cyfrą)
-    private int currentInventoryIndex = 0; // Śledzi, który slot jest następny do zapełnienia
+    public Image[] inventoryIcons;
+    public GameObject[] inventoryCircles;
+    private int currentInventoryIndex = 0;
 
     private void Awake()
     {
@@ -35,7 +34,7 @@ public class UIManager : MonoBehaviour
         Instance = this;
     }
 
-    // --- FUNKCJE DLA TOP PANELU ---
+    // --- TOP PANEL ---
     public void UpdateLevel(int level) { levelText.text = "LEVEL " + level.ToString(); }
     public void UpdateScore(int score) { scoreText.text = "SCORE: " + score.ToString("D6"); }
     public void UpdateLives(int lives) { livesText.text = "x " + lives.ToString(); }
@@ -43,7 +42,7 @@ public class UIManager : MonoBehaviour
     public void ActivateKey() { keyIcon.sprite = keyColorSprite; }
     public void ActivateLevelPowerUp() { powerUpLevelIcon.sprite = powerUpColorSprite; }
 
-    // --- FUNKCJE DLA BOTTOM PANELU ---
+    // --- BOTTOM PANEL ---
     public void UpdateStats(int bombs, int fire)
     {
         maxBombsText.text = bombs.ToString();
@@ -52,17 +51,23 @@ public class UIManager : MonoBehaviour
 
     public void AddToInventory(Sprite powerUpSprite)
     {
-        // Sprawdzamy, czy mamy jeszcze miejsce w ekwipunku
         if (currentInventoryIndex < inventoryIcons.Length)
         {
-            // Włączamy obrazek i podmieniamy grafikę
             inventoryIcons[currentInventoryIndex].gameObject.SetActive(true);
             inventoryIcons[currentInventoryIndex].sprite = powerUpSprite;
 
-            // Włączamy kółeczko z cyfrą na dole slota
             inventoryCircles[currentInventoryIndex].gameObject.SetActive(true);
 
             currentInventoryIndex++;
         }
     }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
+
 }

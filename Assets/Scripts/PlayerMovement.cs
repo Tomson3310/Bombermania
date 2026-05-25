@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private LayerMask obstacleLayer;
 
     private Rigidbody2D rb;
@@ -15,16 +14,17 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 secondaryDirection;
     private Vector2 lastRawInput;
 
-    // (Gap Seeking)
     private bool wasBlockedX;
     private bool wasBlockedY;
 
     private PlayerControls controls;
+    private PlayerStats playerStats;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         controls = new PlayerControls();
+        playerStats = GetComponent<PlayerStats>();
     }
 
     private void OnEnable() => controls.Enable();
@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 rawInput = controls.Player.Move.ReadValue<Vector2>();
 
+        // normalize input (with deadzone)
         Vector2 input = new Vector2(
             Mathf.Abs(rawInput.x) > 0.1f ? Mathf.Sign(rawInput.x) : 0,
             Mathf.Abs(rawInput.y) > 0.1f ? Mathf.Sign(rawInput.y) : 0
@@ -42,23 +43,22 @@ public class PlayerMovement : MonoBehaviour
         Vector2 dirX = new Vector2(input.x, 0);
         Vector2 dirY = new Vector2(0, input.y);
 
-        // Sprawdzamy radarem oba wciśnięte kierunki
         bool isBlockedX = input.x != 0 && IsDirectionBlocked(dirX);
         bool isBlockedY = input.y != 0 && IsDirectionBlocked(dirY);
 
-        // GAP SEEKING - Priorytet dla luki, która właśnie się pojawiła
+        // Prioritize gap that just opened (gap seeking)
         if (input.x != 0 && wasBlockedX && !isBlockedX)
         {
             primaryDirection = dirX;
             secondaryDirection = dirY;
         }
-        
+
         else if (input.y != 0 && wasBlockedY && !isBlockedY)
         {
             primaryDirection = dirY;
             secondaryDirection = dirX;
         }
-        // STANDARDOWY PRIORYTET (Ostatnio wciśnięty klawisz)
+        // Prioritize most recently pressed direction
         else if (input != lastRawInput)
         {
             if (input.x != 0 && lastRawInput.x == 0)
@@ -82,13 +82,11 @@ public class PlayerMovement : MonoBehaviour
                 else if (input.y != 0) { primaryDirection = dirY; secondaryDirection = Vector2.zero; }
             }
         }
-
-        // Zapisujemy stany na następną klatkę
+        // setting for next frame
         lastRawInput = input;
         wasBlockedX = isBlockedX;
         wasBlockedY = isBlockedY;
 
-        // LOGIKA RUCHU I ŚLIZGANIA
         movementInput = primaryDirection;
 
         if (primaryDirection != Vector2.zero && secondaryDirection != Vector2.zero)
@@ -101,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else
                 {
-                    movementInput = Vector2.zero; // Oba zablokowane
+                    movementInput = Vector2.zero;
                 }
             }
         }
@@ -109,27 +107,32 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsDirectionBlocked(Vector2 direction)
     {
-        // CircleCastAll zwraca listę wszystkiego, co uderzył nasz radar
         RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, 0.15f, direction, 0.4f, obstacleLayer);
 
         foreach (RaycastHit2D hit in hits)
         {
-            // 1. Ignorujemy samego gracza (zabezpieczenie)
+            // Skip the player itself
             if (hit.collider.gameObject == gameObject) continue;
 
-            // 2. Jeśli uderzyliśmy w bombę, sprawdzamy, czy gracz wciąż na niej stoi
+            // Skip bombs the player is standing on and if player has bomb pass power-up
             if (hit.collider.CompareTag("Bomb"))
             {
+                if (playerStats.HasBombPass) continue;
+
                 Collider2D playerCollider = GetComponent<Collider2D>();
 
-                // Jeśli nasze granice wciąż się przecinają, ignorujemy tę bombę
                 if (playerCollider != null && hit.collider.bounds.Intersects(playerCollider.bounds))
                 {
                     continue;
                 }
             }
 
-            // Jeśli doszliśmy tutaj, trafiliśmy na prawdziwą, twardą przeszkodę (ścianę, skrzynkę lub zamkniętą bombę)
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Crate"))
+            {
+                // Ignore crates if player has crate pass power-up
+                if (playerStats.HasCratePass) continue;
+            }
+
             return true;
         }
 
@@ -138,12 +141,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.linearVelocity = movementInput * moveSpeed;
+        rb.linearVelocity = movementInput * playerStats.PlayerMoveSpeed;
     }
     public void Die()
     {
-        Debug.Log("Gracz nie żyje! GAME OVER");
-        
+        Debug.Log("Player died! GAME OVER");
         Destroy(gameObject);
     }
 }

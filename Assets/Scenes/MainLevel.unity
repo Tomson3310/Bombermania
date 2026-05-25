@@ -815,7 +815,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1318502557779142857, guid: d1a87738a65a8544b849179fd94a976e, type: 3}
+  m_Sprite: {fileID: 2447051656490686184, guid: 05540af6d2923a743a5030d42241c959, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2638,7 +2638,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -101301038653176949, guid: 7ee57e53c6fac2c43b701a3a37c137af, type: 3}
+  m_Sprite: {fileID: 8153154137128084581, guid: 8c21eacc2b77f584db3cdb1ce6b411c5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2807,7 +2807,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32e5c234c0292e741bbe9b6ddaf9f13f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  moveSpeed: 4
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 192
@@ -2827,6 +2826,9 @@ MonoBehaviour:
   bombLayer:
     serializedVersion: 2
     m_Bits: 1024
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!58 &1187738205
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2879,7 +2881,14 @@ MonoBehaviour:
   fireRadius: 1
   maxBombs: 1
   hasDetonator: 0
+  hasCratePass: 1
+  hasBombPass: 0
+  playerMoveSpeed: 3
+  speedBoost: 1.5
   detonatorSprite: {fileID: -101301038653176949, guid: 7ee57e53c6fac2c43b701a3a37c137af, type: 3}
+  speedBoostSprite: {fileID: 6629503220586895099, guid: 846ab954b3c854f48881ae7f03cacc10, type: 3}
+  cratePassSprite: {fileID: 2447051656490686184, guid: 05540af6d2923a743a5030d42241c959, type: 3}
+  bombPassSprite: {fileID: 8153154137128084581, guid: 8c21eacc2b77f584db3cdb1ce6b411c5, type: 3}
 --- !u!1 &1205880733
 GameObject:
   m_ObjectHideFlags: 0
@@ -4542,7 +4551,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -101301038653176949, guid: 7ee57e53c6fac2c43b701a3a37c137af, type: 3}
+  m_Sprite: {fileID: 6629503220586895099, guid: 846ab954b3c854f48881ae7f03cacc10, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4725,8 +4734,12 @@ MonoBehaviour:
   - {fileID: 6335763416406092919, guid: 8ea744e7a9abe794abc94c84d53f318c, type: 3}
   - {fileID: 6335763416406092919, guid: 7afbe628d281b2141839f97707f26095, type: 3}
   - {fileID: 6335763416406092919, guid: 801e7eb833fea6f4dbe9329e04c51855, type: 3}
+  - {fileID: 6335763416406092919, guid: a4bd479d9b5cbdb47aa33ceec9bd40ff, type: 3}
+  - {fileID: 6335763416406092919, guid: 64222cb9a2af4d0428098fdad4e7711d, type: 3}
+  - {fileID: 6335763416406092919, guid: a0bdd307930782147ac7dedf1c1e980e, type: 3}
+  - {fileID: 6335763416406092919, guid: a1158a2fbb893bb409b388e18c378291, type: 3}
   enemyPrefab: {fileID: 4569405894446552970, guid: 5063a8b4870ab3f43bf7f4a060d3531b, type: 3}
-  enemiesToSpawn: 3
+  enemiesToSpawn: 1
   cratesToSpawn: 3
 --- !u!4 &2133954613
 Transform:

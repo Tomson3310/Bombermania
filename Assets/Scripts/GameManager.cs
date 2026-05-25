@@ -21,7 +21,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // Aktualizujemy UI na samym starcie gry
         UIManager.Instance.UpdateLevel(currentLevel);
         UIManager.Instance.UpdateScore(score);
     }
@@ -32,18 +31,17 @@ public class GameManager : MonoBehaviour
     {
         enemyCount--;
 
-        // Dodajemy punkty i aktualizujemy ekran!
-        score += 100; // Zmień tę wartość na taką, jaką chcesz
+        score += 100;
         UIManager.Instance.UpdateScore(score);
 
-        Debug.Log("Zabito potwora! Pozostało: " + enemyCount);
+        Debug.Log("Enemy defeated! Remaining: " + enemyCount);
 
         if (enemyCount <= 0) { SpawnKey(deathPosition); }
     }
 
     private void SpawnKey(Vector3 spawnPosition)
     {
-        Debug.Log("Ostatni potwór pokonany! Pojawia się KLUCZ!");
+        Debug.Log("Last enemy defeated! Key spawned!");
         float snapX = Mathf.Floor(spawnPosition.x) + 0.5f;
         float snapY = Mathf.Floor(spawnPosition.y) + 0.5f;
         Vector3 centeredPosition = new Vector3(snapX, snapY, 0f);
@@ -54,10 +52,17 @@ public class GameManager : MonoBehaviour
     public void PickUpKey()
     {
         hasKey = true;
-        // Zmieniamy szarą ikonkę klucza na kolorową!
         UIManager.Instance.ActivateKey();
 
         Gate levelGate = FindAnyObjectByType<Gate>();
         if (levelGate != null) { levelGate.OpenGate(); }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 }

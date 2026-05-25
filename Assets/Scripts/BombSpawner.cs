@@ -7,13 +7,13 @@ public class BombSpawner : MonoBehaviour
     [Header("Bomb Settings")]
     [SerializeField] private GameObject bombPrefab;
     [SerializeField] private LayerMask bombLayer;
+    [SerializeField] private LayerMask obstacleLayer;
 
     private PlayerControls controls;
     private PlayerStats playerStats;
 
     private int currentBombs = 0;
 
-    // NOWOŚĆ: Lista przechowująca aktualnie leżące bomby
     private List<Bomb> activeBombs = new List<Bomb>();
 
     private void Awake()
@@ -41,32 +41,31 @@ public class BombSpawner : MonoBehaviour
         Collider2D overlappingBomb = Physics2D.OverlapCircle(snapPosition, 0.1f, bombLayer);
         if (overlappingBomb != null) return;
 
+        Collider2D overlappingObstacle = Physics2D.OverlapPoint(snapPosition, obstacleLayer);
+        if (overlappingObstacle != null) return;
+
         GameObject spawnedBomb = Instantiate(bombPrefab, snapPosition, Quaternion.identity);
         currentBombs++;
 
         Bomb bombScript = spawnedBomb.GetComponent<Bomb>();
         if (bombScript != null)
         {
-            // Przekazujemy bombie wszystkie informacje za jednym zamachem
             bombScript.InitializeBomb(this, playerStats.FireRadius, playerStats.HasDetonator);
-
-            // Dodajemy bombę na koniec naszej listy
             activeBombs.Add(bombScript);
         }
     }
 
-    // Funkcja aktywowana przyciskiem Detonate
     private void DetonateOldestBomb()
     {
         if (!playerStats.HasDetonator) return;
 
-        // Czyścimy listę z bomb, które mogły już wybuchnąć w reakcji łańcuchowej (są nullami)
+        // Remove bombs destroyed by chain reactions
         activeBombs.RemoveAll(b => b == null);
 
         if (activeBombs.Count > 0)
         {
-            Bomb oldestBomb = activeBombs[0]; // Pobieramy najstarszą
-            activeBombs.RemoveAt(0); // Usuwamy ją z kolejki
+            Bomb oldestBomb = activeBombs[0];
+            activeBombs.RemoveAt(0);
 
             if (oldestBomb != null)
             {

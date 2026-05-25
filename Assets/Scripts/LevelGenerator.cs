@@ -19,7 +19,6 @@ public class LevelGenerator : MonoBehaviour
 
     [Header("Hidden Items")]
     [SerializeField] private GameObject gatePrefab;
-    // Tablica wszystkich dostępnych power-upów w grze
     [SerializeField] private GameObject[] powerUpPrefabs;
 
     [Header("Enemies")]
@@ -38,13 +37,11 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateLevel()
     {
-        // 1. CZYSZCZENIE MAPY
         floorTilemap.ClearAllTiles();
         solidWallTilemap.ClearAllTiles();
 
         List<Vector2> availableSpaces = new List<Vector2>();
 
-        // 2. BUDOWA MAPY
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -64,6 +61,7 @@ public class LevelGenerator : MonoBehaviour
                 }
                 else
                 {
+                    // Keep player spawn area clear
                     if ((x == 1 && y == height - 2) ||
                         (x == 1 && y == height - 3) ||
                         (x == 2 && y == height - 2))
@@ -76,7 +74,6 @@ public class LevelGenerator : MonoBehaviour
             }
         }
 
-        // 3. ROZSTAWIANIE SKRZYNEK
         int spawned = 0;
         List<Crate> spawnedCrates = new List<Crate>();
 
@@ -93,15 +90,12 @@ public class LevelGenerator : MonoBehaviour
             spawned++;
         }
 
-        // 4. UKRYWANIE SKARBÓW (Brama i losowy Power-up)
         if (spawnedCrates.Count >= 2)
         {
-            // Chowamy bramę
             int gateIndex = Random.Range(0, spawnedCrates.Count);
             spawnedCrates[gateIndex].hiddenItemPrefab = gatePrefab;
-            spawnedCrates.RemoveAt(gateIndex); // Usuwamy tę skrzynkę z puli dostępnych
+            spawnedCrates.RemoveAt(gateIndex);
 
-            // Losujemy jeden power-up z naszej tablicy
             GameObject selectedPowerUp = null;
             if (powerUpPrefabs != null && powerUpPrefabs.Length > 0)
             {
@@ -109,13 +103,12 @@ public class LevelGenerator : MonoBehaviour
                 selectedPowerUp = powerUpPrefabs[randomPowerUpIndex];
             }
 
-            // Chowamy wylosowany power-up pod inną skrzynką
             int crateForPowerUpIndex = Random.Range(0, spawnedCrates.Count);
             spawnedCrates[crateForPowerUpIndex].hiddenItemPrefab = selectedPowerUp;
             spawnedCrates.RemoveAt(crateForPowerUpIndex);
         }
 
-        // 5. GENEROWANIE PRZECIWNIKÓW
+        // Spawn enemies away from player start position
         List<Vector2> safeEnemySpaces = new List<Vector2>();
         Vector2 playerStartPos = new Vector2(1.5f, height - 1.5f);
 

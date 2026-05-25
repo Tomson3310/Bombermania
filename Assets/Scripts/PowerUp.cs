@@ -8,11 +8,14 @@ public class PowerUp : MonoBehaviour
         FireRange,
         ExtraBomb,
         Detonator,
-        SpeedMove // na przyszłość
+        SpeedMove,
+        CratePass,
+        BombPass,
+        ExtraLife
     }
 
     [Header("PowerUp Settings")]
-    [SerializeField] private PowerUpType type; // Wybór typu w Inspektorze
+    [SerializeField] private PowerUpType type;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -22,7 +25,6 @@ public class PowerUp : MonoBehaviour
 
             if (stats != null)
             {
-                // Sprawdzamy, jaki typ power-upa właśnie podnieśliśmy
                 switch (type)
                 {
                     case PowerUpType.FireRange:
@@ -32,9 +34,21 @@ public class PowerUp : MonoBehaviour
                     case PowerUpType.ExtraBomb:
                         stats.IncreaseMaxBombs();
                         break;
-                    
+
                     case PowerUpType.Detonator:
                         stats.EnableDetonator();
+                        break;
+                    case PowerUpType.SpeedMove:
+                        stats.IncreasePlayerSpeed();
+                        break;
+                    case PowerUpType.CratePass:
+                        stats.EnableCratePass();
+                        break;
+                    case PowerUpType.BombPass:
+                        stats.EnableBombPass();
+                        break;
+                    case PowerUpType.ExtraLife:
+                        stats.IncreaseLives();
                         break;
                 }
 

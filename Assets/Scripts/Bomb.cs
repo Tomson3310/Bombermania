@@ -11,12 +11,10 @@ public class Bomb : MonoBehaviour
 
     private int explosionRadius = 1;
 
-    // Referencje do ignorowania kolizji
     private Collider2D bombCollider;
     private Collider2D playerCollider;
     private BombSpawner mySpawner;
 
-    // Flaga zabezpieczająca przed nieskończoną pętlą wybuchów
     private bool isExploding = false;
     
     private bool isDetonatorControlled = false;
@@ -26,7 +24,7 @@ public class Bomb : MonoBehaviour
         explosionRadius = radius;
         isDetonatorControlled = detonatorActive;
 
-        // Jeśli gracz NIE ma detonatora, włączamy stary zapalnik czasowy
+        // Use timed fuse if detonator is inactive
         if (!isDetonatorControlled)
         {
             Invoke(nameof(Explode), fuseTime);
@@ -61,29 +59,26 @@ public class Bomb : MonoBehaviour
         }
     }
 
-    // Funkcja wywoływana, gdy innna bomba "dotknie" nas swoim ogniem
+    // Triggered when another bomb's explosion reaches this one
     public void ForceExplode()
     {
         if (!isExploding)
         {
-            CancelInvoke(nameof(Explode)); // Anulujemy standardowe odliczanie
-            Explode(); // Odpalamy bombę natychmiast
+            CancelInvoke(nameof(Explode));
+            Explode();
         }
     }
 
     private void Explode()
     {
-        // Jeśli bomba już zaczęła wybuchać w tej klatce, przerywamy
         if (isExploding) return;
 
-        isExploding = true; // Blokujemy możliwość ponownego odpalenia
+        isExploding = true;
 
         if (explosionPrefab != null)
         {
-            // Ogień na środku (w miejscu samej bomby)
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
 
-            // Ogień rozchodzący się na boki
             SpawnExplosionInDirection(Vector2.up);
             SpawnExplosionInDirection(Vector2.down);
             SpawnExplosionInDirection(Vector2.left);
@@ -104,12 +99,10 @@ public class Bomb : MonoBehaviour
         {
             Vector2 spawnPosition = (Vector2)transform.position + (direction * i);
 
-            // Skanujemy kratkę przed nami
             Collider2D hit = Physics2D.OverlapBox(spawnPosition, new Vector2(0.5f, 0.5f), 0f, obstacleLayer);
 
             if (hit != null)
             {
-                // 1. Sprawdzamy, czy uderzyliśmy w skrzynkę
                 Crate crate = hit.GetComponent<Crate>();
                 if (crate != null)
                 {
@@ -117,25 +110,19 @@ public class Bomb : MonoBehaviour
                     Instantiate(explosionPrefab, spawnPosition, Quaternion.identity);
                 }
 
-                // 2. Sprawdzamy, czy na naszej drodze stoi INNA BOMBA!
+                // Chain reaction: detonate adjacent bombs
                 Bomb otherBomb = hit.GetComponent<Bomb>();
                 if (otherBomb != null)
                 {
-                    // Odpalamy sąsiednią bombę natychmiast!
                     otherBomb.ForceExplode();
                 }
 
-                // Przerywamy pętlę - wybuch nie idzie dalej za przeszkodę (ścianę/skrzynkę/bombę)
+                // Stop propagation at obstacles
                 break;
             }
 
-            // Jeśli droga jest wolna, stawiamy zwykły płomień
             Instantiate(explosionPrefab, spawnPosition, Quaternion.identity);
         }
     }
 
-    public void SetRadius(int newRadius)
-    {
-        explosionRadius = newRadius;
-    }
 }
