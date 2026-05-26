@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class UIManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class UIManager : MonoBehaviour
     public TMP_Text levelText;
     public TMP_Text scoreText;
     public TMP_Text livesText;
+    public TMP_Text timeText;
     public Image keyIcon;
     public Image powerUpLevelIcon;
     public Sprite keyColorSprite;
@@ -49,6 +51,13 @@ public class UIManager : MonoBehaviour
         fireRadiusText.text = fire.ToString();
     }
 
+    public void UpdateTimerDisplay(int timeInSeconds)
+    {
+        int minutes = timeInSeconds / 60;
+        int seconds = timeInSeconds % 60;
+        timeText.text = string.Format("Time: {0:00}:{1:00}", minutes, seconds);
+    }
+
     public void AddToInventory(Sprite powerUpSprite)
     {
         if (powerUpSprite == null) return;
@@ -60,6 +69,30 @@ public class UIManager : MonoBehaviour
             inventoryCircles[currentInventoryIndex].gameObject.SetActive(true);
 
             currentInventoryIndex++;
+        }
+    }
+
+    // Wyciąga listę sprite'ów z obecnie zajętych miejsc w ekwipunku
+    public List<Sprite> GetCollectedIcons()
+    {
+        System.Collections.Generic.List<Sprite> collected = new List<Sprite>();
+        for (int i = 0; i < currentInventoryIndex; i++)
+        {
+            collected.Add(inventoryIcons[i].sprite);
+        }
+        return collected;
+    }
+
+    // Odtwarza ekwipunek na podstawie otrzymanej listy ikon
+    public void RestoreInventory(List<Sprite> savedIcons)
+    {
+        // Zerujemy indeks (na wszelki wypadek)
+        currentInventoryIndex = 0;
+
+        // Zapełniamy ekwipunek zapisanymi ikonami
+        foreach (Sprite icon in savedIcons)
+        {
+            AddToInventory(icon);
         }
     }
 

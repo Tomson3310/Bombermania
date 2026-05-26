@@ -23,4 +23,5 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   killRadius: 0.3
+  scoreValue: 300
   sortingOrder: 5

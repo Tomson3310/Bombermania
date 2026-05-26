@@ -31,7 +31,8 @@ public class Gate : MonoBehaviour
         {
             if (GameManager.Instance != null && GameManager.Instance.hasKey)
             {
-                Debug.Log("POZIOM UKOŃCZONY! Gracz przeszedł przez otwartą bramę!");
+                Debug.Log("LEVEL COMPLETED! Player passed through the open gate!");
+                GameManager.Instance.LoadNextLevel();
             }
             else
             {

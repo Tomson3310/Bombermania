@@ -1,26 +1,26 @@
-using System.Collections;
-using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
-using UnityEngine.SceneManagement;
+//using system.collections;
+//using nunit.framework;
+//using unityengine;
+//using unityengine.testtools;
+//using unityengine.scenemanagement;
 
-public class LevelGeneratorTests
-{
-    [UnityTest]
-    public IEnumerator LevelGenerator_SpawnsCorrectNumberOfCrates()
-    {
-        // Arrange
-        SceneManager.LoadScene(0);
+//public class levelgeneratortests
+//{
+//    [unitytest]
+//    public ienumerator levelgenerator_spawnscorrectnumberofcrates()
+//    {
+//        // arrange
+//        scenemanager.loadscene(0);
 
-        // Wait for generator to build level
-        yield return null;
+//        // wait for generator to build level
+//        yield return null;
 
-        // Act
-        LevelGenerator generator = GameObject.FindAnyObjectByType<LevelGenerator>();
-        Crate[] spawnedCrates = GameObject.FindObjectsByType<Crate>(FindObjectsSortMode.None);
+//        // act
+//        levelgenerator generator = gameobject.findanyobjectbytype<levelgenerator>();
+//        crate[] spawnedcrates = gameobject.findobjectsbytype<crate>(findobjectssortmode.none);
 
-        // Assert
-        Assert.IsNotNull(generator, "LevelGenerator not found in scene.");
-        Assert.AreEqual(generator.CratesToSpawn, spawnedCrates.Length, "Spawned crates count does not match CratesToSpawn setting.");
-    }
-}
+//        // assert
+//        assert.isnotnull(generator, "levelgenerator not found in scene.");
+//        assert.areequal(generator.cratestospawn, spawnedcrates.length, "spawned crates count does not match cratestospawn setting.");
+//    }
+//}

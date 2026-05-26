@@ -4,7 +4,7 @@ using UnityEngine;
 public class SpeedPowerUpData : PowerUpData
 {
     [Header("Speed Settings")]
-    [SerializeField] private float speedMultiplier = 1.25f;
+    [SerializeField] private float speedMultiplier = 1.5f;
 
     
     public override void ApplyEffect(PlayerStats stats)

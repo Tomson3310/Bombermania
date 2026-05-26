@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: GameScripts::EnemyData
   enemyName: Basic Slime
   enemySprite: {fileID: -2044889691954185585, guid: a70319cc20996b54a807151fa1914df1, type: 3}
-  speed: 2
+  speed: 1.5
   spontaneousTurnChance: 0.1
   canPassCrates: 0
   canPassBombs: 0
@@ -23,4 +23,5 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   killRadius: 0.3
+  scoreValue: 100
   sortingOrder: 3

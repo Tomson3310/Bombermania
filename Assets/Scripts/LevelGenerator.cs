@@ -4,9 +4,8 @@ using UnityEngine.Tilemaps;
 
 public class LevelGenerator : MonoBehaviour
 {
-    [Header("Grid Settings")]
-    [SerializeField] private int width = 15;
-    [SerializeField] private int height = 11;
+    [Header("Level Data")]
+    private LevelData currentLevel;
 
     [Header("Static Environment (Tilemap)")]
     [SerializeField] private Tilemap floorTilemap;
@@ -15,24 +14,33 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private TileBase solidWallTile;
 
     [Header("Dynamic Objects (Prefabs)")]
+    [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameObject cratePrefab;
+    [SerializeField] private GameObject enemyPrefab;
 
     [Header("Hidden Items")]
     [SerializeField] private GameObject gatePrefab;
-    [SerializeField] private GameObject[] powerUpPrefabs;
-
-    [Header("Enemies")]
-    [SerializeField] private GameObject enemyPrefab;
-    [SerializeField] private int enemiesToSpawn = 3;
-
-    [Header("Level Setup")]
-    [SerializeField] private int cratesToSpawn = 20;
-
-    public int CratesToSpawn => cratesToSpawn;
+    [SerializeField] private GameObject basePowerUpPrefab;
 
     private void Start()
-    {
+    {        
+        if (GameManager.Instance != null)
+        {
+            currentLevel = GameManager.Instance.GetCurrentLevelData();
+        }
+
+        if (currentLevel == null)
+        {
+            Debug.LogError("Brak danych poziomu! Sprawdź listę allLevels w GameManagerze.");
+            return;
+        }
+
         GenerateLevel();
+
+        if (GameManager.Instance != null)
+        {            
+            GameManager.Instance.StartLevel(currentLevel.TimeLimitSeconds);
+        }
     }
 
     private void GenerateLevel()
@@ -42,29 +50,40 @@ public class LevelGenerator : MonoBehaviour
 
         List<Vector2> availableSpaces = new List<Vector2>();
 
-        for (int x = 0; x < width; x++)
+        // Player start position (bottom-left corner, away from walls)
+        Vector2 playerStartPos = new Vector2(1.5f, currentLevel.Height - 1.5f);
+        
+        if (playerPrefab != null)
         {
-            for (int y = 0; y < height; y++)
+            Instantiate(playerPrefab, playerStartPos, Quaternion.identity, transform);
+        }
+
+        // Generating floor and walls
+        for (int x = 0; x < currentLevel.Width; x++)
+        {
+            for (int y = 0; y < currentLevel.Height; y++)
             {
                 Vector3Int cellPosition = new Vector3Int(x, y, 0);
                 Vector2 worldSpawnPos = new Vector2(x + 0.5f, y + 0.5f);
 
                 floorTilemap.SetTile(cellPosition, floorTile);
 
-                if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
+                // Outer walls
+                if (x == 0 || x == currentLevel.Width - 1 || y == 0 || y == currentLevel.Height - 1)
                 {
                     solidWallTilemap.SetTile(cellPosition, solidWallTile);
                 }
+                // Internal indestructible pillars
                 else if (x % 2 == 0 && y % 2 == 0)
                 {
                     solidWallTilemap.SetTile(cellPosition, solidWallTile);
                 }
                 else
                 {
-                    // Keep player spawn area clear
-                    if ((x == 1 && y == height - 2) ||
-                        (x == 1 && y == height - 3) ||
-                        (x == 2 && y == height - 2))
+                    // Safe zone near player start (to prevent immediate trapping)
+                    if ((x == 1 && y == currentLevel.Height - 2) ||
+                        (x == 1 && y == currentLevel.Height - 3) ||
+                        (x == 2 && y == currentLevel.Height - 2))
                     {
                         continue;
                     }
@@ -74,10 +93,11 @@ public class LevelGenerator : MonoBehaviour
             }
         }
 
-        int spawned = 0;
+        // Crates spawning
+        int spawnedCratesCount = 0;
         List<Crate> spawnedCrates = new List<Crate>();
 
-        while (spawned < cratesToSpawn && availableSpaces.Count > 0)
+        while (spawnedCratesCount < currentLevel.CratesToSpawn && availableSpaces.Count > 0)
         {
             int randomIndex = Random.Range(0, availableSpaces.Count);
             Vector2 cratePos = availableSpaces[randomIndex];
@@ -87,30 +107,34 @@ public class LevelGenerator : MonoBehaviour
             spawnedCrates.Add(newCrateScript);
 
             availableSpaces.RemoveAt(randomIndex);
-            spawned++;
+            spawnedCratesCount++;
         }
 
+        // Gate and Power-Up assignment
         if (spawnedCrates.Count >= 2)
         {
+            
             int gateIndex = Random.Range(0, spawnedCrates.Count);
             spawnedCrates[gateIndex].hiddenItemPrefab = gatePrefab;
             spawnedCrates.RemoveAt(gateIndex);
-
-            GameObject selectedPowerUp = null;
-            if (powerUpPrefabs != null && powerUpPrefabs.Length > 0)
+            
+            if (currentLevel.PowerUpsToSpawn != null && currentLevel.PowerUpsToSpawn.Count > 0)
             {
-                int randomPowerUpIndex = Random.Range(0, powerUpPrefabs.Length);
-                selectedPowerUp = powerUpPrefabs[randomPowerUpIndex];
-            }
+                
+                int randomPowerUpIndex = Random.Range(0, currentLevel.PowerUpsToSpawn.Count);
+                PowerUpData selectedPowerUpData = currentLevel.PowerUpsToSpawn[randomPowerUpIndex];
 
-            int crateForPowerUpIndex = Random.Range(0, spawnedCrates.Count);
-            spawnedCrates[crateForPowerUpIndex].hiddenItemPrefab = selectedPowerUp;
-            spawnedCrates.RemoveAt(crateForPowerUpIndex);
+                int crateForPowerUpIndex = Random.Range(0, spawnedCrates.Count);
+                
+                spawnedCrates[crateForPowerUpIndex].hiddenItemPrefab = basePowerUpPrefab;
+                spawnedCrates[crateForPowerUpIndex].powerUpData = selectedPowerUpData;
+
+                spawnedCrates.RemoveAt(crateForPowerUpIndex);
+            }
         }
 
-        // Spawn enemies away from player start position
+        // Enemies spawning
         List<Vector2> safeEnemySpaces = new List<Vector2>();
-        Vector2 playerStartPos = new Vector2(1.5f, height - 1.5f);
 
         foreach (Vector2 space in availableSpaces)
         {
@@ -120,16 +144,25 @@ public class LevelGenerator : MonoBehaviour
             }
         }
 
-        int spawnedEnemies = 0;
-        while (spawnedEnemies < enemiesToSpawn && safeEnemySpaces.Count > 0)
+        foreach (LevelData.EnemySpawnConfig config in currentLevel.EnemiesToSpawn)
         {
-            int randomIndex = Random.Range(0, safeEnemySpaces.Count);
-            Vector2 enemyPos = safeEnemySpaces[randomIndex];
+            for (int i = 0; i < config.count; i++)
+            {
+                if (safeEnemySpaces.Count == 0) break; // no more space for enemies
 
-            Instantiate(enemyPrefab, enemyPos, Quaternion.identity, transform);
+                int randomIndex = Random.Range(0, safeEnemySpaces.Count);
+                Vector2 enemyPos = safeEnemySpaces[randomIndex];
+                
+                GameObject newEnemyObj = Instantiate(enemyPrefab, enemyPos, Quaternion.identity, transform);
+                
+                EnemyAI enemyAI = newEnemyObj.GetComponent<EnemyAI>();
+                if (enemyAI != null)
+                {
+                    enemyAI.Initialize(config.enemyProfile);
+                }
 
-            safeEnemySpaces.RemoveAt(randomIndex);
-            spawnedEnemies++;
+                safeEnemySpaces.RemoveAt(randomIndex);
+            }
         }
     }
 }

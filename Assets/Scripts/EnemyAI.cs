@@ -6,6 +6,15 @@ public class EnemyAI : MonoBehaviour
     [Header("Identity Profile")]
     [SerializeField] private EnemyData data;
 
+    public void Initialize(EnemyData profileData)
+    {
+        data = profileData;
+
+        SpriteRenderer spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        spriteRenderer.sprite = data.EnemySprite;
+        spriteRenderer.sortingOrder = data.SortingOrder;
+    }
+
     private Vector2 currentDirection;
     private Vector2 targetPosition;
     private Rigidbody2D rb;
@@ -24,11 +33,7 @@ public class EnemyAI : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         myCollider = GetComponent<Collider2D>();
-
-        SpriteRenderer spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        spriteRenderer.sprite = data.EnemySprite;
-        spriteRenderer.sortingOrder = data.SortingOrder;
-
+                
         targetPosition = new Vector2(Mathf.Floor(transform.position.x) + 0.5f, Mathf.Floor(transform.position.y) + 0.5f);
         transform.position = targetPosition;
     }

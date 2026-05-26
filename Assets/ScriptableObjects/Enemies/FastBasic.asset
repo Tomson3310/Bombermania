@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: GameScripts::EnemyData
   enemyName: Fast Enemy
   enemySprite: {fileID: -8776098013360601231, guid: 713f5c62cefa5f14da5b3f1ac56300f6, type: 3}
-  speed: 4
+  speed: 3.5
   spontaneousTurnChance: 0.1
   canPassCrates: 0
   canPassBombs: 0
@@ -23,4 +23,5 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   killRadius: 0.3
+  scoreValue: 250
   sortingOrder: 3

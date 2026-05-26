@@ -11,6 +11,8 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private bool hasBombPass = false;
     [SerializeField] private float playerMoveSpeed = 5f;
 
+    // Public getters for stats
+    public int Lives => lives;
     public int FireRange => fireRange;
     public int MaxBombs => maxBombs;
     public bool HasDetonator => hasDetonator;
@@ -20,9 +22,26 @@ public class PlayerStats : MonoBehaviour
 
     private void Start()
     {
-        // Reset collision settings in case player had crate/bomb pass from previous level
-        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Crate"), false);
-        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Bomb"), false);
+        // Logic for loading saved stats from GameManager, or using defaults if it's a new game
+        if (GameManager.Instance != null && GameManager.Instance.hasSavedSession)
+        {            
+            lives = GameManager.Instance.savedLives;
+            fireRange = GameManager.Instance.savedFireRange;
+            maxBombs = GameManager.Instance.savedMaxBombs;
+            hasDetonator = GameManager.Instance.savedHasDetonator;
+            playerMoveSpeed = GameManager.Instance.savedPlayerMoveSpeed;
+            
+            if (GameManager.Instance.savedHasCratePass) EnableCratePass();
+            else hasCratePass = false;
+
+            if (GameManager.Instance.savedHasBombPass) EnableBombPass();
+            else hasBombPass = false;
+        }
+        else
+        {            
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Crate"), hasCratePass);
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Bomb"), hasBombPass);
+        }
 
         UIManager.Instance.UpdateLives(lives);
         UIManager.Instance.UpdateStats(maxBombs, fireRange);

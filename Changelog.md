@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to Semantic Versioning.
 
+## [0.4.1] - 2026-05-26
+### Added
+- Single Scene Architecture: Implemented seamless transitions between levels.
+- LevelData System: Introduced ScriptableObject files to design level rules (time, dimensions, enemies, rewards) directly from the Inspector.
+- State Vault in GameManager: Added session progress saving system (player stats, lives, inventory) that carries over between stages.
+- Dynamic Camera: New intelligent `CameraController` that automatically reads map size, centers view or follows the player while respecting boundaries and UI.
+- Universal Power-Up Prefab: Replaced multiple prefabs with a single dynamic reward "bubble" that changes appearance and properties at runtime.
+- `EnemyData` ScriptableObject class to define enemy identities, stats, and abilities.
+- Configurable `ScoreValue` for each enemy type.
+- FastBasic and Ghost enemy profiles created using the new ScriptableObject system.
+
+### Changed
+- Major Architecture Update: Refactored Power-Up system to use `PowerUpData` ScriptableObjects and polymorphism.
+- Major Architecture Update: Decoupled enemy behavior from stats using `EnemyData` ScriptableObject.
+- Overhauled grid movement system: Replaced velocity-based pushing with precise waypoint-based movement.
+- Completely rebuilt `LevelGenerator.cs` — now reads data from GameManager, spawns player in top-left and injects `EnemyData` profiles.
+- Improved `GameManager.cs` with `DontDestroyOnLoad` and better session handling.
+- Decoupled `PlayerStats` from UI concerns (removed Sprite references).
+- `PlayerStats.cs` now loads upgrades from previous level on scene start.
+- Simplified `PowerUp.cs` collision logic — now directly executes attached ScriptableObject's `ApplyEffect()`.
+- `UIManager.cs` gained methods for exporting and importing inventory graphical state.
+
+### Fixed
+- Fixed high-speed enemies overshooting grid centers and getting stuck in corners.
+- Eliminated enemy movement jitter and physics fights by nullifying residual forces and enforcing strict axis-locking.
+- Fixed collision loops by adding `bounceCooldown` and checking head-on collision angles.
+
+### Removed
+- Removed hardcoded objects in the scene (Player etc.) — everything is now procedurally generated.
+- Removed old separate prefabs for individual Power-Ups.
+- Removed manual level references from the Inspector in camera and generator.
+
+---
+
 ## [0.4.0] - 2026-05-25
 ### Added
 - Implemented the remaining 4 Power-Ups: `SpeedMove`, `CratePass`, `BombPass`, and `ExtraLife`.
