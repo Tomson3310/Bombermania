@@ -32,6 +32,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.Instance != null && !GameManager.Instance.isLevelActive) return;
+
         Vector2 rawInput = controls.Player.Move.ReadValue<Vector2>();
 
         // normalize input (with deadzone)
@@ -141,11 +143,29 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (GameManager.Instance != null && !GameManager.Instance.isLevelActive)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         rb.linearVelocity = movementInput * playerStats.PlayerMoveSpeed;
     }
     public void Die()
     {
-        Debug.Log("Player died! GAME OVER");
-        Destroy(gameObject);
+        Debug.Log("<color=magenta>[PlayerMovement]</color> Gracz uderzony! Zatrzymuję fizykę i wywołuję LoseLife().");
+
+        // Stop player movement immediately
+        controls.Disable();
+        rb.linearVelocity = Vector2.zero;
+
+        // Hide player sprite to indicate death (will be replaced with death animation in the future)
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null) sr.enabled = false;
+        
+        if (playerStats != null)
+        {
+            playerStats.LoseLife();
+        }
     }
 }

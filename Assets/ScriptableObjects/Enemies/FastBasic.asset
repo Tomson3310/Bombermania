@@ -18,7 +18,7 @@ MonoBehaviour:
   spontaneousTurnChance: 0.1
   canPassCrates: 0
   canPassBombs: 0
-  canPassEnemies: 0
+  canPassEnemies: 1
   playerLayer:
     serializedVersion: 2
     m_Bits: 256

@@ -29,6 +29,11 @@ public class GameManager : MonoBehaviour
     public float savedPlayerMoveSpeed;
     public List<Sprite> savedInventoryIcons = new List<Sprite>();
 
+    private List<PowerUpData> activePowerUpPool = new List<PowerUpData>();
+    public List<PowerUpData> uniquePowerUpsInInventory = new List<PowerUpData>();
+
+    [HideInInspector] public float basePlayerSpeed;
+
     public void ClearSavedSession()
     {
         hasSavedSession = false;
@@ -62,10 +67,10 @@ public class GameManager : MonoBehaviour
                 levelTimer = 0f;
                 isLevelActive = false;
                 UIManager.Instance.UpdateTimerDisplay(0);                                
-                PlayerMovement player = FindAnyObjectByType<PlayerMovement>();
+                PlayerStats player = FindAnyObjectByType<PlayerStats>();
                 if (player != null)
                 {
-                    player.Die();
+                    player.LoseLife();
                 }
             }
         }
@@ -76,6 +81,12 @@ public class GameManager : MonoBehaviour
         int listIndex = currentLevel - 1; // Level 1 is at index 0
         if (listIndex >= 0 && listIndex < allLevels.Count)
         {
+            activePowerUpPool = new List<PowerUpData>(allLevels[listIndex].PowerUpsToSpawn);
+            if (uniquePowerUpsInInventory.Count > 0)
+            {
+                // remove unique power-ups that the player already has from the pool to prevent duplicates
+                activePowerUpPool.RemoveAll(item => uniquePowerUpsInInventory.Contains(item));
+            }
             return allLevels[listIndex];
         }
         return null;
@@ -83,6 +94,8 @@ public class GameManager : MonoBehaviour
 
     public void LoadNextLevel()
     {
+        Debug.Log($"<color=cyan>[GameManager]</color> LoadNextLevel wywołany! Ukończono poziom {currentLevel}.");
+
         // Save current player stats before loading the next level
         PlayerStats currentStats = FindAnyObjectByType<PlayerStats>();
         if (currentStats != null)
@@ -96,6 +109,7 @@ public class GameManager : MonoBehaviour
             savedPlayerMoveSpeed = currentStats.PlayerMoveSpeed;
 
             hasSavedSession = true;
+            Debug.Log($"<color=cyan>[GameManager]</color> Statystyki gracza pomyślnie zapisane do sejfu przed zmianą poziomu.");
         }
 
         if (UIManager.Instance != null)
@@ -108,23 +122,24 @@ public class GameManager : MonoBehaviour
 
         if (currentLevel - 1 < allLevels.Count)
         {
+            Debug.Log($"<color=cyan>[GameManager]</color> Ładuję scenę dla Poziomu {currentLevel}...");
             UnityEngine.SceneManagement.SceneManager.LoadScene(
                 UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
             );
         }
         else
         {
-            Debug.Log("Gratulacje! Przeszedłeś wszystkie poziomy!");
+            Debug.Log("<color=yellow>[GameManager]</color> Gratulacje! Przeszedłeś wszystkie poziomy!");
         }
     }
 
     public void StartLevel(int startTime)
     {
-        levelTimer = startTime;
-        isLevelActive = true;
+        Debug.Log($"<color=cyan>[GameManager]</color> StartLevel wywołany dla poziomu {currentLevel}. Zegar: {startTime}s.");
+        levelTimer = startTime;        
         hasKey = false;
         enemyCount = 0;
-
+        
         if (UIManager.Instance != null)
         {
             UIManager.Instance.UpdateLevel(currentLevel);
@@ -135,7 +150,103 @@ public class GameManager : MonoBehaviour
                 UIManager.Instance.RestoreInventory(savedInventoryIcons);
             }
         }
+        StartCoroutine(LevelStartSequence());
     }
+
+    private System.Collections.IEnumerator LevelStartSequence()
+    {
+        Debug.Log("<color=cyan>[GameManager]</color> LevelStartSequence START. Zamrażam poziom (isLevelActive = false).");
+        isLevelActive = false;
+        
+        int livesToShow = 3;
+
+        if (hasSavedSession)
+        {
+            // after death or loading a saved game
+            livesToShow = savedLives;
+        }
+        else
+        {            
+            PlayerStats player = FindAnyObjectByType<PlayerStats>();
+            if (player != null)
+            {
+                livesToShow = player.Lives;
+            }
+        }
+                
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowIntermission(currentLevel, livesToShow);
+        }
+
+        Debug.Log("<color=cyan>[GameManager]</color> Ekran kurtyny wyświetlony. Rozpoczynam odliczanie 3 sekund...");
+        yield return new WaitForSeconds(3f);
+                
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.HideIntermission();
+        }
+
+        // Starting the level after the intermission
+        isLevelActive = true;
+        Debug.Log("<color=cyan>[GameManager]</color> LevelStartSequence KONIEC. Kurtyna zeszła. Gra ożywa (isLevelActive = true)!");
+    }
+
+    public void ResetCurrentLevel()
+    {
+        Debug.Log($"<color=cyan>[GameManager]</color> ResetCurrentLevel wywołany! Scena będzie przeładowana za ułamek sekundy.");
+        isLevelActive = false;
+        hasKey = false;
+        enemyCount = 0;
+        
+        savedHasBombPass = false;
+        savedHasDetonator = false;
+        savedHasCratePass = false;
+        savedPlayerMoveSpeed = basePlayerSpeed;
+        
+        PlayerStats currentStats = FindAnyObjectByType<PlayerStats>();
+        if (currentStats != null)
+        {
+            savedLives = currentStats.Lives;
+            savedFireRange = currentStats.FireRange;
+            savedMaxBombs = currentStats.MaxBombs;
+            Debug.Log($"<color=cyan>[GameManager]</color> Zapisuję do sejfu przed restartem: Życia={savedLives}, Zasięg={savedFireRange}, Bomby={savedMaxBombs}");
+        }
+        
+        hasSavedSession = true;
+        
+        if (uniquePowerUpsInInventory.Count > 0)
+        {
+            foreach (PowerUpData uniquePowerUp in uniquePowerUpsInInventory)
+            {
+                if (savedInventoryIcons.Contains(uniquePowerUp.UiIcon))
+                {
+                    savedInventoryIcons.Remove(uniquePowerUp.UiIcon);
+                }
+            }
+            uniquePowerUpsInInventory.Clear();
+        }
+        
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
+        );
+    }
+
+    public void GameOver()
+    {
+        isLevelActive = false;
+        
+        ClearSavedSession();
+        uniquePowerUpsInInventory.Clear();
+        // Reset to the first level (for now, will be changed to a Game Over screen later)
+        currentLevel = 1;
+        
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
+        );
+    }
+
+
 
     public void RegisterEnemy() { enemyCount++; }
 
@@ -144,16 +255,34 @@ public class GameManager : MonoBehaviour
         enemyCount--;
 
         score += points;
-        UIManager.Instance.UpdateScore(score);
-
-        Debug.Log("Enemy defeated! Remaining: " + enemyCount);
+        UIManager.Instance.UpdateScore(score);        
 
         if (enemyCount <= 0) { SpawnKey(deathPosition); }
     }
 
-    private void SpawnKey(Vector3 spawnPosition)
+    public PowerUpData GetRandomPowerUpFromPool()
     {
-        Debug.Log("Last enemy defeated! Key spawned!");
+        if (activePowerUpPool.Count == 0) return null;        
+        
+        int randomIndex = Random.Range(0, activePowerUpPool.Count);
+        PowerUpData selectedPowerUp = activePowerUpPool[randomIndex];       
+        return selectedPowerUp;
+    }
+
+    public void RemovePowerUpFromPool(PowerUpData powerUpToRemove)
+    {
+        if (activePowerUpPool.Contains(powerUpToRemove))
+        {
+            activePowerUpPool.Remove(powerUpToRemove);
+        }
+        if (powerUpToRemove.IsUnique && !uniquePowerUpsInInventory.Contains(powerUpToRemove))
+        {
+            uniquePowerUpsInInventory.Add(powerUpToRemove);
+        }
+    }
+
+    private void SpawnKey(Vector3 spawnPosition)
+    {        
         float snapX = Mathf.Floor(spawnPosition.x) + 0.5f;
         float snapY = Mathf.Floor(spawnPosition.y) + 0.5f;
         Vector3 centeredPosition = new Vector3(snapX, snapY, 0f);

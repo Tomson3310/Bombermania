@@ -22,6 +22,9 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private GameObject gatePrefab;
     [SerializeField] private GameObject basePowerUpPrefab;
 
+    [Header("Safe Zone")]
+    [SerializeField] private float safeZoneRadius = 6f;
+
     private void Start()
     {        
         if (GameManager.Instance != null)
@@ -116,14 +119,11 @@ public class LevelGenerator : MonoBehaviour
             
             int gateIndex = Random.Range(0, spawnedCrates.Count);
             spawnedCrates[gateIndex].hiddenItemPrefab = gatePrefab;
-            spawnedCrates.RemoveAt(gateIndex);
+            spawnedCrates.RemoveAt(gateIndex);            
             
             if (currentLevel.PowerUpsToSpawn != null && currentLevel.PowerUpsToSpawn.Count > 0)
-            {
-                
-                int randomPowerUpIndex = Random.Range(0, currentLevel.PowerUpsToSpawn.Count);
-                PowerUpData selectedPowerUpData = currentLevel.PowerUpsToSpawn[randomPowerUpIndex];
-
+            {                
+                PowerUpData selectedPowerUpData = GameManager.Instance.GetRandomPowerUpFromPool();                
                 int crateForPowerUpIndex = Random.Range(0, spawnedCrates.Count);
                 
                 spawnedCrates[crateForPowerUpIndex].hiddenItemPrefab = basePowerUpPrefab;
@@ -138,7 +138,7 @@ public class LevelGenerator : MonoBehaviour
 
         foreach (Vector2 space in availableSpaces)
         {
-            if (Vector2.Distance(playerStartPos, space) > 3f)
+            if (Vector2.Distance(playerStartPos, space) > safeZoneRadius)
             {
                 safeEnemySpaces.Add(space);
             }

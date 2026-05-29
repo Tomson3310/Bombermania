@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: GameScripts::DetonatorData
   powerUpName: Detonator
   uiIcon: {fileID: -101301038653176949, guid: 7ee57e53c6fac2c43b701a3a37c137af, type: 3}
+  isUnique: 1

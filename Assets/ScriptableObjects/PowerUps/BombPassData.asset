@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: GameScripts::BombPassPowerUpData
   powerUpName: Bomb Pass
   uiIcon: {fileID: 8153154137128084581, guid: 8c21eacc2b77f584db3cdb1ce6b411c5, type: 3}
+  isUnique: 1

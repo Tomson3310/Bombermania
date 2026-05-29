@@ -26,6 +26,11 @@ public class UIManager : MonoBehaviour
     public GameObject[] inventoryCircles;
     private int currentInventoryIndex = 0;
 
+    [Header("Intermission Screen")]
+    public GameObject intermissionPanel;
+    public TMP_Text intermissionLevelText;
+    public TMP_Text intermissionLivesText;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -57,6 +62,18 @@ public class UIManager : MonoBehaviour
         int seconds = timeInSeconds % 60;
         timeText.text = string.Format("Time: {0:00}:{1:00}", minutes, seconds);
     }
+        
+    public void ShowIntermission(int level, int lives)
+    {
+        intermissionPanel.SetActive(true);
+        intermissionLevelText.text = "LEVEL " + level.ToString();
+        intermissionLivesText.text = "x " + lives.ToString();
+    }
+        
+    public void HideIntermission()
+    {
+        intermissionPanel.SetActive(false);
+    }
 
     public void AddToInventory(Sprite powerUpSprite)
     {
@@ -71,25 +88,22 @@ public class UIManager : MonoBehaviour
             currentInventoryIndex++;
         }
     }
-
-    // Wyciąga listę sprite'ów z obecnie zajętych miejsc w ekwipunku
+        
     public List<Sprite> GetCollectedIcons()
     {
-        System.Collections.Generic.List<Sprite> collected = new List<Sprite>();
+        List<Sprite> collected = new List<Sprite>();
         for (int i = 0; i < currentInventoryIndex; i++)
         {
             collected.Add(inventoryIcons[i].sprite);
         }
         return collected;
     }
-
-    // Odtwarza ekwipunek na podstawie otrzymanej listy ikon
+        
     public void RestoreInventory(List<Sprite> savedIcons)
     {
-        // Zerujemy indeks (na wszelki wypadek)
+        // Index reset - double check to ensure we start filling from the first slot
         currentInventoryIndex = 0;
-
-        // Zapełniamy ekwipunek zapisanymi ikonami
+        
         foreach (Sprite icon in savedIcons)
         {
             AddToInventory(icon);

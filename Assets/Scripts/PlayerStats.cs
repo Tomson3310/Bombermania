@@ -22,27 +22,35 @@ public class PlayerStats : MonoBehaviour
 
     private void Start()
     {
-        // Logic for loading saved stats from GameManager, or using defaults if it's a new game
+
+        Debug.Log("<color=green>[PlayerStats]</color> Start gracza. Inicjalizacja statystyk...");
+        // Logic for loading saved stats from GameManager, if available
         if (GameManager.Instance != null && GameManager.Instance.hasSavedSession)
-        {            
+        {
             lives = GameManager.Instance.savedLives;
             fireRange = GameManager.Instance.savedFireRange;
             maxBombs = GameManager.Instance.savedMaxBombs;
             hasDetonator = GameManager.Instance.savedHasDetonator;
             playerMoveSpeed = GameManager.Instance.savedPlayerMoveSpeed;
-            
-            if (GameManager.Instance.savedHasCratePass) EnableCratePass();
-            else hasCratePass = false;
 
-            if (GameManager.Instance.savedHasBombPass) EnableBombPass();
-            else hasBombPass = false;
+            hasCratePass = GameManager.Instance.savedHasCratePass;
+            hasBombPass = GameManager.Instance.savedHasBombPass;
+            Debug.Log($"<color=green>[PlayerStats]</color> Załadowano sejf: Życia={lives}, Prędkość={playerMoveSpeed}, BombPass={hasBombPass}");
         }
         else
-        {            
-            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Crate"), hasCratePass);
-            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Bomb"), hasBombPass);
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.basePlayerSpeed = this.playerMoveSpeed;
+            }
+            Debug.Log("<color=green>[PlayerStats]</color> Nowa gra. Używam domyślnych wartości z prefabu.");
         }
 
+        // Very important: Set layer collision rules based on loaded stats
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Crate"), hasCratePass);
+        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Bomb"), hasBombPass);
+
+        // UI Update
         UIManager.Instance.UpdateLives(lives);
         UIManager.Instance.UpdateStats(maxBombs, fireRange);
     }
@@ -51,7 +59,24 @@ public class PlayerStats : MonoBehaviour
     {
         lives--;
         UIManager.Instance.UpdateLives(lives);
-        if (lives <= 0) { Debug.Log("Game Over!"); }
+        Debug.Log($"<color=green>[PlayerStats]</color> UTRATA ŻYCIA! Pozostało żyć: {lives}");
+
+        if (lives > 0)
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.ResetCurrentLevel();
+            }
+        }
+        else
+        {
+            Debug.Log("<color=red>[PlayerStats]</color> GAME OVER - Brak żyć!");
+
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.GameOver();
+            }
+        }
     }
 
     public void IncreaseFireRadius(int amount)

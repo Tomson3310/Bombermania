@@ -19,6 +19,7 @@ public class Explosion : MonoBehaviour
         }
         else if (other.CompareTag("Player"))
         {
+            Debug.Log("<color=orange>[Explosion]</color> Bomba dotknęła gracza! Wywołuję Die().");
             PlayerMovement player = other.GetComponent<PlayerMovement>();
             if (player != null) player.Die();
         }

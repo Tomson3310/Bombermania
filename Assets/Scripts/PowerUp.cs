@@ -22,11 +22,16 @@ public class PowerUp : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            PlayerStats stats = other.GetComponent<PlayerStats>();
+            PlayerStats stats = other.GetComponent<PlayerStats>();           
 
             if (stats != null && data != null)
             {
                 data.ApplyEffect(stats);
+                
+                if (data.IsUnique && GameManager.Instance != null)
+                {
+                    GameManager.Instance.RemovePowerUpFromPool(data);
+                }
                 Destroy(gameObject);
             }
         }

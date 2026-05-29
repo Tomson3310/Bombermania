@@ -40,6 +40,13 @@ public class EnemyAI : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // If the level isn't active (e.g. during transitions or after player death), don't move
+        if (GameManager.Instance != null && !GameManager.Instance.isLevelActive)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         if (isDead) return;
         
         Collider2D playerCollider = Physics2D.OverlapCircle(transform.position, data.KillRadius, data.PlayerLayer);

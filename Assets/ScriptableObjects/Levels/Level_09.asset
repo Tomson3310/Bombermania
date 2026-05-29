@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b182d262e62af4247a0ee0ca896ec5bf, type: 3}
+  m_Name: Level_09
+  m_EditorClassIdentifier: GameScripts::LevelData
+  enemiesToSpawn:
+  - enemyProfile: {fileID: 11400000, guid: 63f9a345103e36f41bf5850d88af5c2f, type: 2}
+    count: 9
+  - enemyProfile: {fileID: 11400000, guid: ce962136074880046976ef6d7529448c, type: 2}
+    count: 6
+  - enemyProfile: {fileID: 11400000, guid: 2867765c8ee9509468cc7b3595073a0f, type: 2}
+    count: 5
+  powerUpsToSpawn:
+  - {fileID: 11400000, guid: 9147cc816abfd284498d5b6d35ab4346, type: 2}
+  - {fileID: 11400000, guid: dc58185b3a93b5b4da71087d555366f1, type: 2}
+  - {fileID: 11400000, guid: b9a9d6c016a02f44e99f4a608ba16815, type: 2}
+  - {fileID: 11400000, guid: eec3aee8bab5a1d4ebab05d411cd97d0, type: 2}
+  - {fileID: 11400000, guid: 736b017ae845bd24baade9e190dece79, type: 2}
+  - {fileID: 11400000, guid: 9a81736f790dbcf4780c2b1bc8293452, type: 2}
+  - {fileID: 11400000, guid: 4e4b0a776a7865e498ec49c0dbc47856, type: 2}
+  width: 25
+  height: 11
+  cratesToSpawn: 65
+  timeLimitSeconds: 180
