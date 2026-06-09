@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to Semantic Versioning.
 
+## [0.4.2] - 2026-06-09
+### Added
+- Intermission Screen: Implemented a 3-second transition screen showing level number and current lives count. Game time is paused until the level starts.
+- Telemetry System: Added colorful Rich Text logging in the console for critical moments in the game loop (`GameManager`, `PlayerStats`, `PlayerMovement`, `Explosion`) to improve debugging.
+- Safe Zone: Added configurable `safeZoneRadius` parameter in `LevelGenerator` to prevent enemies and crates from spawning too close to the player's starting position.
+- Main Menu Scene: Fully implemented functional main menu with options to start the game, view high scores, and quit the application.
+- Leaderboard System (Top 10): Added persistent high score saving to disk in JSON format via `HighScoreManager`
+
+### Changed
+- State Management Architecture: Updated how `GameManager` persists data after death. Player keeps reduced lives, bomb count, and explosion range, but loses temporary power-ups (Speed, BombPass, CratePass, Detonator). Unique items are returned to the loot pool and removed from UI inventory.
+- Game Over Flow: Final death no longer instantly loads Level 1. Instead, it shows a game over screen, then either opens the new high score panel or returns to the Main Menu.
+
+### Fixed
+- Critical StackOverflowException: Eliminated infinite recursion loop between `PlayerMovement` and `PlayerStats` that was crashing the Unity Editor on last life.
+- Spawn Kill Bug: Prevented enemies (`EnemyAI`) and the player from moving or attacking during the intermission screen.
+- Physics State Leak (BombPass/CratePass): Enforced full reset of `Physics2D.IgnoreLayerCollision` rules in player's `Start()` method so power-up effects no longer carry over to new lives.
+- Lives Display Issue: Intermission screen now correctly reads the updated lives count directly from `GameManager.savedLives`, fixing timing problems with player prefab loading.
+
+---
+
 ## [0.4.1] - 2026-05-26
 ### Added
 - Single Scene Architecture: Implemented seamless transitions between levels.

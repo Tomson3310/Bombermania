@@ -34,6 +34,9 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector] public float basePlayerSpeed;
 
+    [Header("Game Over Screen Settings")]
+    public float gameOverDisplayDuration = 4f;
+
     public void ClearSavedSession()
     {
         hasSavedSession = false;
@@ -122,10 +125,8 @@ public class GameManager : MonoBehaviour
 
         if (currentLevel - 1 < allLevels.Count)
         {
-            Debug.Log($"<color=cyan>[GameManager]</color> Ładuję scenę dla Poziomu {currentLevel}...");
-            UnityEngine.SceneManagement.SceneManager.LoadScene(
-                UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
-            );
+            Debug.Log($"<color=cyan>[GameManager]</color> Ładuję scenę dla Poziomu {currentLevel}...");            
+            UnityEngine.SceneManagement.SceneManager.LoadScene(1);
         }
         else
         {
@@ -234,16 +235,63 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        Debug.Log("<color=red>[GameManager]</color> Rozpoczynam sekwencję Game Over.");
         isLevelActive = false;
-        
+
+        // Reset the game state
         ClearSavedSession();
         uniquePowerUpsInInventory.Clear();
-        // Reset to the first level (for now, will be changed to a Game Over screen later)
-        currentLevel = 1;
+        currentLevel = 1;        
         
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
-        );
+        StartCoroutine(GameOverSequence());
+    }
+
+    private System.Collections.IEnumerator GameOverSequence()
+    {
+        // 1. Pokazujemy czerwony ekran Game Over
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowGameOver();
+        }
+
+        // 2. Dajemy graczowi czas na przetrawienie porażki (używając Twojej nowej zmiennej!)
+        yield return new WaitForSeconds(gameOverDisplayDuration);
+
+        // 3. SPRAWDZAMY CZY TO JEST NOWY REKORD
+        if (HighScoreManager.IsHighScore(score))
+        {
+            Debug.Log("<color=yellow>[GameManager]</color> Nowy rekord! Zatrzymuję powrót do menu i proszę o NICK.");
+
+            // Opcjonalnie wyłączamy ekran Game Over, żeby panel wpisywania był wyraźniejszy
+            if (UIManager.Instance != null)
+            {
+                // UIManager.Instance.gameOverPanel.SetActive(false); // Odkomentuj jeśli wolisz
+                UIManager.Instance.ShowHighScoreInput();
+            }
+
+            // Coroutine się tutaj kończy. Czekamy, aż gracz wpisze NICK i kliknie przycisk.
+        }
+        else
+        {
+            // Zwykła śmierć - brak rekordu
+            Debug.Log("<color=cyan>[GameManager]</color> Brak rekordu. Wracam do Menu Głównego.");
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        }
+    }
+
+    // Tę metodę wywołuje UIManager, gdy gracz kliknie przycisk ZAPISZ
+    public void SaveHighScoreAndExit(string playerName)
+    {
+        // Zapisujemy wynik do naszego menedżera
+        HighScoreManager.AddScore(playerName, score);
+
+        // Ustawiamy specjalną flagę dla MainMenu: "Hej, tym razem pokaż od razu tablicę wyników!"
+        PlayerPrefs.SetInt("ShowLeaderboard", 1);
+        PlayerPrefs.Save();
+
+        // Wracamy do Menu Głównego (indeks 0)
+        Debug.Log("<color=cyan>[GameManager]</color> Zapisano rekord. Przeładowuję do tablicy wyników w Menu.");
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 
 

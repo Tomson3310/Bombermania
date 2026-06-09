@@ -31,6 +31,13 @@ public class UIManager : MonoBehaviour
     public TMP_Text intermissionLevelText;
     public TMP_Text intermissionLivesText;
 
+    [Header("Game Over Screen")]
+    public GameObject gameOverPanel;
+
+    [Header("High Score Input Settings")]
+    public GameObject newHighScorePanel;
+    public TMPro.TMP_InputField nameInputField;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -88,7 +95,38 @@ public class UIManager : MonoBehaviour
             currentInventoryIndex++;
         }
     }
+
+    public void ShowGameOver()
+    {
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
+    }
+
+    public void ShowHighScoreInput()
+    {
+        if (newHighScorePanel != null)
+        {
+            newHighScorePanel.SetActive(true);
+        }
+    }
         
+    public void OnSubmitHighScoreClicked()
+    {
+        // Input validation - if the player didn't enter a name, we use a default placeholder
+        string nick = "---";
+        if (nameInputField != null && !string.IsNullOrWhiteSpace(nameInputField.text))
+        {
+            nick = nameInputField.text.Trim().ToUpper();
+        }
+                
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SaveHighScoreAndExit(nick);
+        }
+    }
+
     public List<Sprite> GetCollectedIcons()
     {
         List<Sprite> collected = new List<Sprite>();
