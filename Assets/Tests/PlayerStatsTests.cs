@@ -129,8 +129,8 @@ public class PlayerStatsTests
     [Test]
     public void LoseLife_DecreasesLiveCount()
     {
-        // Act
-        playerStats.LoseLife();
+        // Act - Przekazujemy wymagany argument DeathType
+        playerStats.LoseLife(DeathType.Normal);
 
         // Assert
         int currentLives = GetPrivateField<int>("lives");
@@ -140,10 +140,10 @@ public class PlayerStatsTests
     [Test]
     public void LoseLife_CanBeLostMultipleTimes()
     {
-        // Act
-        playerStats.LoseLife();
-        playerStats.LoseLife();
-        playerStats.LoseLife();
+        // Act - Przekazujemy wymagany argument DeathType
+        playerStats.LoseLife(DeathType.Normal);
+        playerStats.LoseLife(DeathType.Normal);
+        playerStats.LoseLife(DeathType.Normal);
 
         // Assert
         int currentLives = GetPrivateField<int>("lives");
@@ -153,11 +153,11 @@ public class PlayerStatsTests
     [Test]
     public void LoseLife_CanGoNegative()
     {
-        // Act: Lose more lives than available
-        playerStats.LoseLife();
-        playerStats.LoseLife();
-        playerStats.LoseLife();
-        playerStats.LoseLife();
+        // Act: Lose more lives than available - Przekazujemy wymagany argument DeathType
+        playerStats.LoseLife(DeathType.Normal);
+        playerStats.LoseLife(DeathType.Normal);
+        playerStats.LoseLife(DeathType.Normal);
+        playerStats.LoseLife(DeathType.Normal);
 
         // Assert
         int currentLives = GetPrivateField<int>("lives");
@@ -240,11 +240,11 @@ public class PlayerStatsTests
     [Test]
     public void AllModifiers_CanBeAppliedTogether()
     {
-        // Act
+        // Act - Przekazujemy wymagany argument DeathType
         playerStats.IncreaseFireRadius(1);
         playerStats.IncreaseMaxBombs(1);
         playerStats.EnableDetonator();
-        playerStats.LoseLife();
+        playerStats.LoseLife(DeathType.Normal);
 
         // Assert
         int currentLives = GetPrivateField<int>("lives");

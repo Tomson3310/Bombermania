@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: GameScripts::EnemyData
   enemyName: Basic Slime
   enemySprite: {fileID: -2044889691954185585, guid: a70319cc20996b54a807151fa1914df1, type: 3}
+  animatorController: {fileID: 9100000, guid: d480cef9857b3c847be95de507dc8bd1, type: 2}
   speed: 1.5
   spontaneousTurnChance: 0.1
   canPassCrates: 0

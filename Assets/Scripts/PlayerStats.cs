@@ -10,6 +10,11 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private bool hasCratePass = false;
     [SerializeField] private bool hasBombPass = false;
     [SerializeField] private float playerMoveSpeed = 5f;
+    
+    [Header("Animation")]
+    public Animator animator;
+
+    private bool isDead = false;
 
     // Public getters for stats
     public int Lives => lives;
@@ -55,27 +60,55 @@ public class PlayerStats : MonoBehaviour
         UIManager.Instance.UpdateStats(maxBombs, fireRange);
     }
 
-    public void LoseLife()
+    public void LoseLife(DeathType cause)
     {
+        if (isDead) return;
+        isDead = true;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.isLevelActive = false;
+        }
+
         lives--;
         UIManager.Instance.UpdateLives(lives);
         Debug.Log($"<color=green>[PlayerStats]</color> UTRATA ŻYCIA! Pozostało żyć: {lives}");
 
+        StartCoroutine(DeathSequenceCoroutine(cause));
+    }
+
+    private System.Collections.IEnumerator DeathSequenceCoroutine(DeathType cause)
+    {
+        float deathAnimationLength = 1.5f;
+
+        // Choice of animation based on death cause
+        string animationStateName = (cause == DeathType.Burn) ? "Player_DeathBurn" : "Player_Death";
+
+        if (animator != null)
+        {            
+            animator.Play(animationStateName, -1, 0f);
+        }
+
+        // waiting one frame to ensure the animation state is updated before we read its length
+        yield return null;
+
+        if (animator != null)
+        {           
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+            deathAnimationLength = stateInfo.length;
+            Debug.Log($"<color=green>[PlayerStats]</color> Czas trwania animacji {animationStateName}: {deathAnimationLength} sek.");
+        }
+                
+        yield return new WaitForSeconds(deathAnimationLength);
+
         if (lives > 0)
         {
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.ResetCurrentLevel();
-            }
+            if (GameManager.Instance != null) GameManager.Instance.ResetCurrentLevel();
         }
         else
         {
             Debug.Log("<color=red>[PlayerStats]</color> GAME OVER - Brak żyć!");
-
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.GameOver();
-            }
+            if (GameManager.Instance != null) GameManager.Instance.GameOver();
         }
     }
 

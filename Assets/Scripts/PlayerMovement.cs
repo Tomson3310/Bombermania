@@ -1,6 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
+public enum DeathType
+{
+    Normal, // Dying by enemy or time running out
+    Burn    // Dying by explosion
+}
+
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
@@ -20,6 +27,10 @@ public class PlayerMovement : MonoBehaviour
     private PlayerControls controls;
     private PlayerStats playerStats;
 
+    [Header("Animation")]
+    public Animator animator;
+    public SpriteRenderer spriteRenderer;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -36,7 +47,6 @@ public class PlayerMovement : MonoBehaviour
 
         Vector2 rawInput = controls.Player.Move.ReadValue<Vector2>();
 
-        // normalize input (with deadzone)
         Vector2 input = new Vector2(
             Mathf.Abs(rawInput.x) > 0.1f ? Mathf.Sign(rawInput.x) : 0,
             Mathf.Abs(rawInput.y) > 0.1f ? Mathf.Sign(rawInput.y) : 0
@@ -48,19 +58,16 @@ public class PlayerMovement : MonoBehaviour
         bool isBlockedX = input.x != 0 && IsDirectionBlocked(dirX);
         bool isBlockedY = input.y != 0 && IsDirectionBlocked(dirY);
 
-        // Prioritize gap that just opened (gap seeking)
         if (input.x != 0 && wasBlockedX && !isBlockedX)
         {
             primaryDirection = dirX;
             secondaryDirection = dirY;
         }
-
         else if (input.y != 0 && wasBlockedY && !isBlockedY)
         {
             primaryDirection = dirY;
             secondaryDirection = dirX;
         }
-        // Prioritize most recently pressed direction
         else if (input != lastRawInput)
         {
             if (input.x != 0 && lastRawInput.x == 0)
@@ -84,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
                 else if (input.y != 0) { primaryDirection = dirY; secondaryDirection = Vector2.zero; }
             }
         }
-        // setting for next frame
+
         lastRawInput = input;
         wasBlockedX = isBlockedX;
         wasBlockedY = isBlockedY;
@@ -105,6 +112,22 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
+
+        if (animator != null)
+        {
+            if (movementInput != Vector2.zero)
+            {
+                animator.SetFloat("MoveX", movementInput.x);
+                animator.SetFloat("MoveY", movementInput.y);
+            }
+            animator.SetFloat("Speed", movementInput.sqrMagnitude);
+        }
+
+        if (spriteRenderer != null)
+        {
+            if (movementInput.x < 0) spriteRenderer.flipX = true;
+            else if (movementInput.x > 0) spriteRenderer.flipX = false;
+        }
     }
 
     private bool IsDirectionBlocked(Vector2 direction)
@@ -113,31 +136,21 @@ public class PlayerMovement : MonoBehaviour
 
         foreach (RaycastHit2D hit in hits)
         {
-            // Skip the player itself
             if (hit.collider.gameObject == gameObject) continue;
 
-            // Skip bombs the player is standing on and if player has bomb pass power-up
             if (hit.collider.CompareTag("Bomb"))
             {
                 if (playerStats.HasBombPass) continue;
-
                 Collider2D playerCollider = GetComponent<Collider2D>();
-
-                if (playerCollider != null && hit.collider.bounds.Intersects(playerCollider.bounds))
-                {
-                    continue;
-                }
+                if (playerCollider != null && hit.collider.bounds.Intersects(playerCollider.bounds)) continue;
             }
 
             if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Crate"))
             {
-                // Ignore crates if player has crate pass power-up
                 if (playerStats.HasCratePass) continue;
             }
-
             return true;
         }
-
         return false;
     }
 
@@ -148,24 +161,20 @@ public class PlayerMovement : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
             return;
         }
-
         rb.linearVelocity = movementInput * playerStats.PlayerMoveSpeed;
     }
-    public void Die()
-    {
-        Debug.Log("<color=magenta>[PlayerMovement]</color> Gracz uderzony! Zatrzymuję fizykę i wywołuję LoseLife().");
 
-        // Stop player movement immediately
+    
+    public void Die(DeathType cause)
+    {
+        Debug.Log($"<color=magenta>[PlayerMovement]</color> Gracz zginął! Powód: {cause}. Zatrzymuję fizykę.");
+
         controls.Disable();
         rb.linearVelocity = Vector2.zero;
 
-        // Hide player sprite to indicate death (will be replaced with death animation in the future)
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null) sr.enabled = false;
-        
         if (playerStats != null)
         {
-            playerStats.LoseLife();
+            playerStats.LoseLife(cause);
         }
     }
 }

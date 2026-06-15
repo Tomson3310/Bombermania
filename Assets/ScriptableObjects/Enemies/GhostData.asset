@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: GameScripts::EnemyData
   enemyName: Ghost
   enemySprite: {fileID: 4448715427215634006, guid: 5870301502383334a8b891ae449c4458, type: 3}
+  animatorController: {fileID: 9100000, guid: 6938323346596644fa9d99a3a9b1c55a, type: 2}
   speed: 2
   spontaneousTurnChance: 0.1
   canPassCrates: 1

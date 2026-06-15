@@ -69,11 +69,11 @@ public class GameManager : MonoBehaviour
             {
                 levelTimer = 0f;
                 isLevelActive = false;
-                UIManager.Instance.UpdateTimerDisplay(0);                                
+                UIManager.Instance.UpdateTimerDisplay(0);
                 PlayerStats player = FindAnyObjectByType<PlayerStats>();
                 if (player != null)
                 {
-                    player.LoseLife();
+                    player.LoseLife(DeathType.Normal);
                 }
             }
         }
@@ -248,48 +248,42 @@ public class GameManager : MonoBehaviour
 
     private System.Collections.IEnumerator GameOverSequence()
     {
-        // 1. Pokazujemy czerwony ekran Game Over
+        // Game Over Screen
         if (UIManager.Instance != null)
         {
             UIManager.Instance.ShowGameOver();
         }
 
-        // 2. Dajemy graczowi czas na przetrawienie porażki (używając Twojej nowej zmiennej!)
+        // Delay
         yield return new WaitForSeconds(gameOverDisplayDuration);
 
-        // 3. SPRAWDZAMY CZY TO JEST NOWY REKORD
+        // Check for high score
         if (HighScoreManager.IsHighScore(score))
         {
             Debug.Log("<color=yellow>[GameManager]</color> Nowy rekord! Zatrzymuję powrót do menu i proszę o NICK.");
-
-            // Opcjonalnie wyłączamy ekran Game Over, żeby panel wpisywania był wyraźniejszy
+                        
             if (UIManager.Instance != null)
-            {
-                // UIManager.Instance.gameOverPanel.SetActive(false); // Odkomentuj jeśli wolisz
+            {                
                 UIManager.Instance.ShowHighScoreInput();
-            }
-
-            // Coroutine się tutaj kończy. Czekamy, aż gracz wpisze NICK i kliknie przycisk.
+            }                        
         }
         else
         {
-            // Zwykła śmierć - brak rekordu
+            // Death without high score - just return to main menu
             Debug.Log("<color=cyan>[GameManager]</color> Brak rekordu. Wracam do Menu Głównego.");
             UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         }
     }
 
-    // Tę metodę wywołuje UIManager, gdy gracz kliknie przycisk ZAPISZ
+    // On click of "Save" button in the high score input UI
     public void SaveHighScoreAndExit(string playerName)
-    {
-        // Zapisujemy wynik do naszego menedżera
+    {        
         HighScoreManager.AddScore(playerName, score);
-
-        // Ustawiamy specjalną flagę dla MainMenu: "Hej, tym razem pokaż od razu tablicę wyników!"
+        
         PlayerPrefs.SetInt("ShowLeaderboard", 1);
         PlayerPrefs.Save();
 
-        // Wracamy do Menu Głównego (indeks 0)
+        // Back to main menu
         Debug.Log("<color=cyan>[GameManager]</color> Zapisano rekord. Przeładowuję do tablicy wyników w Menu.");
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }

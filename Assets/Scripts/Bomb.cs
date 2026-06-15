@@ -4,7 +4,11 @@ public class Bomb : MonoBehaviour
 {
     [Header("Bomb Settings")]
     [SerializeField] private float fuseTime = 3f;
-    [SerializeField] private GameObject explosionPrefab;
+
+    [Header("Explosion Prefabs")]
+    [SerializeField] private GameObject explosionCenterPrefab;
+    [SerializeField] private GameObject explosionExtensionPrefab;
+    [SerializeField] private GameObject explosionEndPrefab;
 
     [Header("Collision Settings")]
     [SerializeField] private LayerMask obstacleLayer;
@@ -16,8 +20,8 @@ public class Bomb : MonoBehaviour
     private BombSpawner mySpawner;
 
     private bool isExploding = false;
-    
     private bool isDetonatorControlled = false;
+
     public void InitializeBomb(BombSpawner spawner, int radius, bool detonatorActive)
     {
         mySpawner = spawner;
@@ -75,15 +79,17 @@ public class Bomb : MonoBehaviour
 
         isExploding = true;
 
-        if (explosionPrefab != null)
+        // Spawn center explosion effect
+        if (explosionCenterPrefab != null)
         {
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-
-            SpawnExplosionInDirection(Vector2.up);
-            SpawnExplosionInDirection(Vector2.down);
-            SpawnExplosionInDirection(Vector2.left);
-            SpawnExplosionInDirection(Vector2.right);
+            Instantiate(explosionCenterPrefab, transform.position, Quaternion.identity);
         }
+
+        // 4 directions explosion propagation
+        SpawnExplosionInDirection(Vector2.up);
+        SpawnExplosionInDirection(Vector2.down);
+        SpawnExplosionInDirection(Vector2.left);
+        SpawnExplosionInDirection(Vector2.right);
 
         if (mySpawner != null)
         {
@@ -95,34 +101,48 @@ public class Bomb : MonoBehaviour
 
     private void SpawnExplosionInDirection(Vector2 direction)
     {
+        // Rotation for explosion effects based on direction
+        Quaternion rotation = Quaternion.identity;
+        if (direction == Vector2.up) rotation = Quaternion.Euler(0, 0, 90);
+        else if (direction == Vector2.left) rotation = Quaternion.Euler(0, 0, 180);
+        else if (direction == Vector2.down) rotation = Quaternion.Euler(0, 0, 270);
+
         for (int i = 1; i <= explosionRadius; i++)
         {
             Vector2 spawnPosition = (Vector2)transform.position + (direction * i);
-
             Collider2D hit = Physics2D.OverlapBox(spawnPosition, new Vector2(0.5f, 0.5f), 0f, obstacleLayer);
+
+            // Check if this is the last tile in the explosion range
+            bool isLastTile = (i == explosionRadius);
 
             if (hit != null)
             {
                 Crate crate = hit.GetComponent<Crate>();
                 if (crate != null)
-                {
+                {                    
                     crate.DestroyCrate();
-                    Instantiate(explosionPrefab, spawnPosition, Quaternion.identity);
                 }
 
-                // Chain reaction: detonate adjacent bombs
+                // Chain reaction with other bombs
                 Bomb otherBomb = hit.GetComponent<Bomb>();
                 if (otherBomb != null)
                 {
                     otherBomb.ForceExplode();
                 }
 
-                // Stop propagation at obstacles
+                // We encountered an obstacle, so we stop the spread of fire in this direction
                 break;
             }
 
-            Instantiate(explosionPrefab, spawnPosition, Quaternion.identity);
+            // If it's an empty tile, spawn the appropriate explosion effect
+            if (isLastTile)
+            {
+                if (explosionEndPrefab != null) Instantiate(explosionEndPrefab, spawnPosition, rotation);
+            }
+            else
+            {
+                if (explosionExtensionPrefab != null) Instantiate(explosionExtensionPrefab, spawnPosition, rotation);
+            }
         }
     }
-
 }

@@ -47,7 +47,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bomb
   fuseTime: 3
-  explosionPrefab: {fileID: 8821818137619657399, guid: 96d532daf4e89f14fa01877bcc5e3d0e, type: 3}
+  explosionCenterPrefab: {fileID: 8821818137619657399, guid: 96d532daf4e89f14fa01877bcc5e3d0e, type: 3}
+  explosionExtensionPrefab: {fileID: 8821818137619657399, guid: 7d610521ad9fc634bbe9b6d919bf035d, type: 3}
+  explosionEndPrefab: {fileID: 8821818137619657399, guid: 352d5b7a01fcd514c91fbb5281ba4351, type: 3}
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 1216
@@ -97,6 +99,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4902299660913738157}
   - component: {fileID: 6460534835808804388}
+  - component: {fileID: 3614904108497432606}
   m_Layer: 10
   m_Name: Visuals
   m_TagString: Untagged
@@ -168,7 +171,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 3201510369988122546, guid: b69eaeed944bba043819f6a7d2c56c5d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a8cf6bd73aab5c14baa88ad98cc46fc0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -178,3 +181,25 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!95 &3614904108497432606
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653969248716202751}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 42edea7211044934f911664e81c8dfae, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

@@ -6,6 +6,9 @@ public class EnemyData : ScriptableObject
     [Header("Identity")]
     [SerializeField] private string enemyName;
     [SerializeField] private Sprite enemySprite;
+    
+    [Header("Animation")]
+    public RuntimeAnimatorController animatorController;
 
     [Header("Movement Stats")]
     [SerializeField] private float speed = 2f;

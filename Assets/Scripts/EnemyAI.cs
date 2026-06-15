@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,13 +7,26 @@ public class EnemyAI : MonoBehaviour
     [Header("Identity Profile")]
     [SerializeField] private EnemyData data;
 
+    private Animator animator;
+
     public void Initialize(EnemyData profileData)
     {
         data = profileData;
 
         SpriteRenderer spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        spriteRenderer.sprite = data.EnemySprite;
-        spriteRenderer.sortingOrder = data.SortingOrder;
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.sprite = data.EnemySprite;
+            spriteRenderer.sortingOrder = data.SortingOrder;
+        }
+                
+        animator = GetComponentInChildren<Animator>();
+
+        // CRITICAL: Setting the Animator Controller from the EnemyData SO
+        if (animator != null && data.animatorController != null)
+        {
+            animator.runtimeAnimatorController = data.animatorController;
+        }
     }
 
     private Vector2 currentDirection;
@@ -33,7 +47,7 @@ public class EnemyAI : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         myCollider = GetComponent<Collider2D>();
-                
+
         targetPosition = new Vector2(Mathf.Floor(transform.position.x) + 0.5f, Mathf.Floor(transform.position.y) + 0.5f);
         transform.position = targetPosition;
     }
@@ -44,26 +58,24 @@ public class EnemyAI : MonoBehaviour
         if (GameManager.Instance != null && !GameManager.Instance.isLevelActive)
         {
             rb.linearVelocity = Vector2.zero;
+            UpdateAnimations();
             return;
         }
 
         if (isDead) return;
-        
+
         Collider2D playerCollider = Physics2D.OverlapCircle(transform.position, data.KillRadius, data.PlayerLayer);
         if (playerCollider != null)
         {
             PlayerMovement player = playerCollider.GetComponent<PlayerMovement>();
-            if (player != null) player.Die();
+            if (player != null) player.Die(DeathType.Normal);
         }
 
-        // Bounce cooldown to prevent multiple rapid collisions from causing erratic behavior
         if (bounceCooldown > 0) bounceCooldown -= Time.fixedDeltaTime;
 
-        // Disable physics-based movement to ensure grid-aligned, deterministic behavior
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
 
-        // Axis alignment
         Vector2 alignedPosition = rb.position;
         if (currentDirection.x != 0)
         {
@@ -74,15 +86,33 @@ public class EnemyAI : MonoBehaviour
             alignedPosition.x = targetPosition.x;
         }
 
-        // Move towards the target position
         Vector2 newPos = Vector2.MoveTowards(alignedPosition, targetPosition, data.Speed * Time.fixedDeltaTime);
         rb.MovePosition(newPos);
 
-        // Reached target position, choose next target
         if (Vector2.Distance(rb.position, targetPosition) < 0.05f)
         {
             rb.position = targetPosition;
             ChooseNextTarget();
+        }
+        
+        UpdateAnimations();
+    }
+
+    private void UpdateAnimations()
+    {
+        if (animator == null || isDead) return;
+
+        // while not moving
+        if (currentDirection == Vector2.zero)
+        {
+            animator.SetFloat("Speed", 0f);
+        }
+        // while moving
+        else
+        {
+            animator.SetFloat("Speed", 1f);
+            animator.SetFloat("Horizontal", currentDirection.x);
+            animator.SetFloat("Vertical", currentDirection.y);
         }
     }
 
@@ -90,10 +120,8 @@ public class EnemyAI : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (currentDirection == Vector2.zero) return;
-
         if (bounceCooldown > 0f) return;
 
-        // Check if we can ignore this collision based on our pass-through abilities
         if (collision.gameObject.CompareTag("Bomb") && data.CanPassBombs)
         {
             Physics2D.IgnoreCollision(myCollider, collision.collider, true);
@@ -110,19 +138,16 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-
-        // Check if the collision is head-on (from the direction we're moving towards)
         bool isHeadOnCollision = false;
         foreach (ContactPoint2D contact in collision.contacts)
         {
-            // -0.5f to allow for some angle of collision, not just perfectly head-on
             if (Vector2.Dot(contact.normal, currentDirection) < -0.5f)
             {
                 isHeadOnCollision = true;
                 break;
             }
         }
-                
+
         if (isHeadOnCollision)
         {
             currentDirection = -currentDirection;
@@ -134,25 +159,20 @@ public class EnemyAI : MonoBehaviour
 
     private void ChooseNextTarget()
     {
-        // Check available directions from the current position
         List<Vector2> availableDirections = GetAvailableDirections(targetPosition);
 
         if (availableDirections.Count == 0)
         {
-            // if we're completely boxed in, just stay put and wait for the next update to check again
             currentDirection = Vector2.zero;
             return;
         }
 
-        // check if we can keep going in the same direction
         bool canGoForward = availableDirections.Contains(currentDirection);
 
         if (!canGoForward)
         {
-            
             List<Vector2> options = new List<Vector2>(availableDirections);
 
-            
             if (options.Count > 1 && currentDirection != Vector2.zero)
             {
                 options.Remove(-currentDirection);
@@ -161,7 +181,7 @@ public class EnemyAI : MonoBehaviour
             currentDirection = options[Random.Range(0, options.Count)];
         }
         else
-        {            
+        {
             if (Random.value <= data.SpontaneousTurnChance)
             {
                 List<Vector2> sidePaths = new List<Vector2>();
@@ -177,13 +197,13 @@ public class EnemyAI : MonoBehaviour
                 {
                     currentDirection = sidePaths[Random.Range(0, sidePaths.Count)];
                 }
-                else if (Random.value <= 0.1f) // small chance to reverse direction if no side paths available
+                else if (Random.value <= 0.1f)
                 {
                     currentDirection = -currentDirection;
                 }
             }
         }
-        
+
         targetPosition += currentDirection;
     }
 
@@ -209,14 +229,14 @@ public class EnemyAI : MonoBehaviour
         foreach (RaycastHit2D hit in hits)
         {
             if (hit.collider.gameObject != gameObject && !hit.collider.isTrigger)
-            {                
+            {
                 if (hit.collider.CompareTag("Bomb") && data.CanPassBombs)
                 {
                     Physics2D.IgnoreCollision(myCollider, hit.collider, true);
                     continue;
                 }
 
-                if(hit.collider.CompareTag("Crate") && data.CanPassCrates)
+                if (hit.collider.CompareTag("Crate") && data.CanPassCrates)
                 {
                     Physics2D.IgnoreCollision(myCollider, hit.collider, true);
                     continue;
@@ -228,17 +248,44 @@ public class EnemyAI : MonoBehaviour
                     continue;
                 }
 
-                // if we hit a non-trigger collider that isn't passable, the path is blocked
                 return true;
             }
         }
         return false;
-    }    
+    }
 
     public void Die()
     {
         if (isDead) return;
         isDead = true;
+
+        // disable all interactions and movement immediately
+        currentDirection = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
+        if (myCollider != null) myCollider.enabled = false;
+        
+        if (animator != null)
+        {
+            // WARNING: Works only with correct name of the animation in Animator Controller
+            animator.Play("Death", -1, 0f);
+        }
+
+        StartCoroutine(DeathSequenceCoroutine());
+    }
+
+    private IEnumerator DeathSequenceCoroutine()
+    {
+        // waiting one frame to ensure the death animation starts properly and we can read its length
+        yield return null;
+
+        float waitTime = 1f; // deafault value (just in case)
+        if (animator != null)
+        {
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+            waitTime = stateInfo.length;
+        }
+                
+        yield return new WaitForSeconds(waitTime);
 
         if (GameManager.Instance != null) GameManager.Instance.EnemyDefeated(transform.position, data.ScoreValue);
 
