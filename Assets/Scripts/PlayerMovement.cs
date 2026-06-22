@@ -43,7 +43,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance != null && !GameManager.Instance.isLevelActive) return;
+        if (GameManager.Instance != null && !GameManager.Instance.isLevelActive)
+        {        
+            if (animator != null)
+            {
+                animator.SetFloat("Speed", 0f);
+            }
+            return;
+        }
+
 
         Vector2 rawInput = controls.Player.Move.ReadValue<Vector2>();
 

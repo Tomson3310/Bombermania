@@ -4,18 +4,15 @@ using UnityEngine.SceneManagement;
 public class MainMenuController : MonoBehaviour
 {
     [Header("Leaderboard System")]
-    public LeaderboardUI leaderboardUI; // Przeciągnij tu swój LeaderboardPanel w Inspektorze
+    public LeaderboardUI leaderboardUI;
 
     private void Start()
-    {
-        // Sprawdzamy, czy gracz właśnie wpisał nick po zgonie
+    {        
         if (PlayerPrefs.GetInt("ShowLeaderboard", 0) == 1)
-        {
-            // Resetujemy flagę od razu, żeby przy normalnym odpaleniu gry się to nie psuło
+        {            
             PlayerPrefs.SetInt("ShowLeaderboard", 0);
             PlayerPrefs.Save();
-
-            // Otwieramy tablicę z hukiem!
+                        
             if (leaderboardUI != null)
             {
                 leaderboardUI.OpenLeaderboard();
@@ -24,8 +21,7 @@ public class MainMenuController : MonoBehaviour
     }
 
     public void ShowLeaderboardManually()
-    {
-        // Metoda do podpięcia pod przycisk "LEADERBOARD" w menu głównym
+    {        
         if (leaderboardUI != null)
         {
             leaderboardUI.OpenLeaderboard();

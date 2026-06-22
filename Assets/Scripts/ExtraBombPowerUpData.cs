@@ -9,7 +9,7 @@ public class ExtraBombPowerUpData: PowerUpData
     public override void ApplyEffect(PlayerStats stats)
     {
         stats.IncreaseMaxBombs(maxBombsIncrease);
-        // Aktualizujemy UI, aby pokazać nowe statystyki
+        
         UIManager.Instance.UpdateStats(stats.MaxBombs, stats.FireRange);
         UIManager.Instance.ActivateLevelPowerUp();
     }

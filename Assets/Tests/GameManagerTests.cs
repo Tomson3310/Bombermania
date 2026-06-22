@@ -93,7 +93,6 @@ public class GameManagerTests
 
         // Create dummy inventory arrays
         uiManager.inventoryIcons = new Image[5];
-        uiManager.inventoryCircles = new GameObject[5];
 
         uiManager.fireRadiusText = textComponent;
         uiManager.maxBombsText = textComponent;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// 1. Klasa reprezentująca pojedynczy wpis na liście
+// class representing a single score entry
 [System.Serializable]
 public class ScoreEntry
 {
@@ -15,14 +15,14 @@ public class ScoreEntry
     }
 }
 
-// 2. Klasa opakowująca listę (wymagane, by Unity mogło poprawnie wygenerować JSON)
+// class representing the leaderboard data
 [System.Serializable]
 public class LeaderboardData
 {
     public List<ScoreEntry> entries = new List<ScoreEntry>();
 }
 
-// 3. Główny zarządca wyników (klasa statyczna)
+// class representing the high score manager
 public static class HighScoreManager
 {
     private const string LEADERBOARD_KEY = "Bombermania_Leaderboard";
@@ -47,12 +47,11 @@ public static class HighScoreManager
 
     public static bool IsHighScore(int newScore)
     {
-        if (newScore <= 0) return false; // Nie zapisujemy wyników zerowych
+        if (newScore <= 0) return false;
 
         LeaderboardData data = GetLeaderboard();
 
-        // Sprawdzamy, czy nasz wynik jest wyższy od najsłabszego wpisu na liście
-        // (lub od pustego wpisu "--- : 0")
+        // check if the new score is higher than any of the existing scores
         foreach (ScoreEntry entry in data.entries)
         {
             if (newScore > entry.score)
@@ -67,22 +66,22 @@ public static class HighScoreManager
     {
         LeaderboardData data = GetLeaderboard();
 
-        // Zabezpieczenie przed pustym nickiem
+        // input validation: if the player name is empty, we use "AAA" as a default
         string finalName = string.IsNullOrEmpty(playerName) ? "AAA" : playerName;
 
-        // Dodajemy nowy wynik do listy
+        // add the new score entry to the list
         data.entries.Add(new ScoreEntry(finalName, score));
 
-        // Sortujemy listę malejąco (od najwyższego do najniższego wyniku)
+        // sorting the list in descending order based on score
         data.entries.Sort((x, y) => y.score.CompareTo(x.score));
 
-        // Ucinamy listę, jeśli przekracza 10 pozycji
+        // cutting the list to the maximum number of entries if necessary
         if (data.entries.Count > MAX_ENTRIES)
         {
             data.entries.RemoveRange(MAX_ENTRIES, data.entries.Count - MAX_ENTRIES);
         }
 
-        // Pakujemy listę z powrotem do JSONa i zapisujemy na dysk
+        // packing the data back into JSON and saving it to PlayerPrefs
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(LEADERBOARD_KEY, json);
         PlayerPrefs.Save();
@@ -90,7 +89,7 @@ public static class HighScoreManager
         Debug.Log($"<color=yellow>[HighScoreManager]</color> Zapisano nowy wynik: {finalName} - {score}");
     }
 
-    // Metoda pomocnicza upewniająca się, że zawsze mamy równe 10 miejsc do wyświetlenia
+    // Method helper ensuring we always have exactly 10 places to display
     private static LeaderboardData FillEmptyEntries(LeaderboardData data)
     {
         if (data.entries == null) data.entries = new List<ScoreEntry>();

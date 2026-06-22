@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to Semantic Versioning.
 
+## [0.5.1] - 2026-06-23
+### Added
+- Centralized `AudioManager` Singleton to handle background music and SFX with scene persistence.
+- Advanced Audio Features: Added pitch shifting, volume control, and an anti-stacking limiter to prevent audio clipping when multiple sounds trigger in the same frame.
+- Audio Variance: Bomb planting and explosions now support multiple audio clips and randomized pitch values for a more dynamic and less repetitive soundscape.
+- Comprehensive SFX implementation for: Bomb Spawning, Explosions, Power-Up Spawn/Collect, Gate Spawn, Key Spawn/Collect, Player Death, and Game Over.
+- Game Completed UI: Added a new `GameCompletedPanel` that appears upon finishing the final level, handling the High Score input transition.
+- End-Game Bonus System: Implemented dramatic score tallying coroutines. The game now visually counts down remaining time (10 pts/sec) and remaining lives (5000 pts/life) with dynamic, ascending pitch-shifted sound effects.
+
+### Changed
+- Level Progression Flow: Replaced the instant level load with a time bonus tally sequence. 
+- Refactored SFX calls across `Bomb`, `BombSpawner`, `PowerUp`, `Gate`, and `PlayerStats` to utilize the new `AudioManager` structure.
+
+### Fixed
+- End-Game Soft-Lock: Fixed a critical bug where completing the last level froze the game state without triggering the final UI.
+
+---
+
+## [0.5.0] - 2026-06-15
+### Added
+- Complete Animation System: Implemented directional movement (using 2D Simple Directional Blend Trees), idle, and death animations for both the Player and Enemies.
+- Modular Explosion Architecture: Created separate `Center`, `Extension`, and `End` prefabs. `Bomb.cs` now dynamically spawns and correctly rotates these pieces to build explosions of any size.
+- Dynamic Animator Injection: Added `RuntimeAnimatorController` field to `EnemyData` ScriptableObjects, allowing the `Enemy_Basic` prefab to dynamically load the correct animation brain based on the injected enemy profile.
+- `DeathType` Enum System: Introduced a classification system (`Normal`, `Burn`) that triggers specific death animations (e.g., the player turns to ashes when killed by a bomb, but plays a standard death sequence when touched by an enemy).
+- Crate Burn Mechanics: Added a 5-frame burning animation for crates. Burning crates now act as a temporary "death zone" that eliminates entities with collision-pass abilities (like Ghosts or players with `CratePass`) if they stand inside the fire.
+
+### Changed
+- Crate Collision Logic: `Crate.cs` no longer disables its collider instantly upon destruction. It now remains a solid obstacle for normal entities until the 0.5-second burn animation finishes.
+- Animator Transitions: Bypassed default Unity crossfade blending by setting `Transition Duration` to 0 and utilizing direct `animator.Play()` calls. This ensures frame-perfect, snappy 2D pixel art animations without floating states.
+- Sorting Layers Optimization: Updated global sorting layers (`Order in Layer`) to guarantee that character and enemy death animations render clearly above the explosion fire.
+- Code Architecture: Updated `PlayerMovement`, `PlayerStats`, `EnemyAI`, `GameManager`, and `Explosion` to explicitly pass `DeathType` context when triggering deaths.
+
+### Fixed
+- Animation Loop Glitches: Disabled `Loop Time` on one-shot animations (crate burning, player death) and implemented dynamic length calculation via `AnimatorStateInfo` to prevent clipping, looping artifacts, or race conditions with Coroutines.
+- Unit Tests: Updated `PlayerStatsTests` to accommodate the new `DeathType` requirement in `LoseLife()`, resolving compilation errors and ensuring 100% test pass rate.
+
+---
+
 ## [0.4.2] - 2026-06-09
 ### Added
 - Intermission Screen: Implemented a 3-second transition screen showing level number and current lives count. Game time is paused until the level starts.

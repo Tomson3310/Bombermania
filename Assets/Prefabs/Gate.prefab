@@ -184,3 +184,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: GameScripts::Gate
   openedGateSprite: {fileID: 3305922784710880186, guid: 0a5970cf7f7d1fd429082494550dd9e0, type: 3}
+  gateSpawn: {fileID: 8300000, guid: 69e636f3d5f38ef428ed2f7ac0635679, type: 3}
+  gateSpawnVolume: 0.113

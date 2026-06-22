@@ -15,4 +15,5 @@ MonoBehaviour:
   powerUpName: Extra Life
   uiIcon: {fileID: 6797470288529338130, guid: 84b11cdbef130ea4c8a3a4e78df8ed9e, type: 3}
   isUnique: 0
+  pointsValue: 0
   livesIncrease: 1

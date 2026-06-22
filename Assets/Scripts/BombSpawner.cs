@@ -9,6 +9,12 @@ public class BombSpawner : MonoBehaviour
     [SerializeField] private LayerMask bombLayer;
     [SerializeField] private LayerMask obstacleLayer;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip plantBombSound;
+    [Range(0f, 1f)][SerializeField] private float plantBombVolume = 0.5f;
+    [SerializeField] private float minPitch = 0.85f;
+    [SerializeField] private float maxPitch = 1.15f;
+
     private PlayerControls controls;
     private PlayerStats playerStats;
 
@@ -46,6 +52,11 @@ public class BombSpawner : MonoBehaviour
 
         GameObject spawnedBomb = Instantiate(bombPrefab, snapPosition, Quaternion.identity);
         currentBombs++;
+                
+        if (AudioManager.Instance != null && plantBombSound != null)
+        {
+            AudioManager.Instance.PlaySFX(plantBombSound, plantBombVolume, Random.Range(minPitch, maxPitch));
+        }
 
         Bomb bombScript = spawnedBomb.GetComponent<Bomb>();
         if (bombScript != null)

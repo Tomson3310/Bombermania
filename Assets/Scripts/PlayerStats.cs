@@ -14,6 +14,12 @@ public class PlayerStats : MonoBehaviour
     [Header("Animation")]
     public Animator animator;
 
+    [Header("Sounds")]
+    public AudioClip deathSound;
+    [Range(0f, 1f)][SerializeField] private float deathVolume = 1f;
+
+
+
     private bool isDead = false;
 
     // Public getters for stats
@@ -69,10 +75,19 @@ public class PlayerStats : MonoBehaviour
         {
             GameManager.Instance.isLevelActive = false;
         }
+                
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+        }
 
         lives--;
         UIManager.Instance.UpdateLives(lives);
         Debug.Log($"<color=green>[PlayerStats]</color> UTRATA ŻYCIA! Pozostało żyć: {lives}");
+        if (AudioManager.Instance != null)
+        {            
+            AudioManager.Instance.PlaySFX(deathSound, deathVolume);
+        }
 
         StartCoroutine(DeathSequenceCoroutine(cause));
     }

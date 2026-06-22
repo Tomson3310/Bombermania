@@ -5,11 +5,9 @@ public class LeaderboardUI : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private GameObject leaderboardPanel;
-
-    [Tooltip("Przeciągnij tu wszystkie 10 tekstów z NICKIEM, w kolejności od 1 do 10")]
+        
     [SerializeField] private TMP_Text[] nameTexts;
-
-    [Tooltip("Przeciągnij tu wszystkie 10 tekstów z WYNIKIEM, w kolejności od 1 do 10")]
+        
     [SerializeField] private TMP_Text[] scoreTexts;
 
     private void OnEnable()

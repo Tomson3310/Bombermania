@@ -22,8 +22,7 @@ public class UIManager : MonoBehaviour
     public TMP_Text maxBombsText;
 
     [Header("Bottom Panel - Inventory")]
-    public Image[] inventoryIcons;
-    public GameObject[] inventoryCircles;
+    public Image[] inventoryIcons;    
     private int currentInventoryIndex = 0;
 
     [Header("Intermission Screen")]
@@ -33,6 +32,9 @@ public class UIManager : MonoBehaviour
 
     [Header("Game Over Screen")]
     public GameObject gameOverPanel;
+
+    [Header("Game Completed Screen")]
+    public GameObject gameCompletedPanel;
 
     [Header("High Score Input Settings")]
     public GameObject newHighScorePanel;
@@ -88,9 +90,7 @@ public class UIManager : MonoBehaviour
         if (currentInventoryIndex < inventoryIcons.Length)
         {
             inventoryIcons[currentInventoryIndex].gameObject.SetActive(true);
-            inventoryIcons[currentInventoryIndex].sprite = powerUpSprite;
-
-            inventoryCircles[currentInventoryIndex].gameObject.SetActive(true);
+            inventoryIcons[currentInventoryIndex].sprite = powerUpSprite;           
 
             currentInventoryIndex++;
         }
@@ -101,6 +101,14 @@ public class UIManager : MonoBehaviour
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
+        }
+    }
+
+    public void ShowGameCompleted()
+    {
+        if (gameCompletedPanel != null)
+        {
+            gameCompletedPanel.SetActive(true);
         }
     }
 

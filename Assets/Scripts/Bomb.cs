@@ -10,6 +10,12 @@ public class Bomb : MonoBehaviour
     [SerializeField] private GameObject explosionExtensionPrefab;
     [SerializeField] private GameObject explosionEndPrefab;
 
+    [Header("Audio")]
+    [SerializeField] private System.Collections.Generic.List<AudioClip> explosionSounds;
+    [Range(0f, 1f)][SerializeField] private float explosionVolume = 1f;
+    [SerializeField] private float minPitch = 0.85f;
+    [SerializeField] private float maxPitch = 1.15f;
+
     [Header("Collision Settings")]
     [SerializeField] private LayerMask obstacleLayer;
 
@@ -95,7 +101,19 @@ public class Bomb : MonoBehaviour
         {
             mySpawner.OnBombExploded();
         }
-
+        
+        if (AudioManager.Instance != null && explosionSounds != null && explosionSounds.Count > 0)
+        {            
+            int randomIndex = Random.Range(0, explosionSounds.Count);
+            AudioClip selectedExplosionSound = explosionSounds[randomIndex];
+                        
+            float randomPitch = Random.Range(minPitch, maxPitch);
+                        
+            if (selectedExplosionSound != null)
+            {
+                AudioManager.Instance.PlaySFX(selectedExplosionSound, explosionVolume, randomPitch);
+            }
+        }
         Destroy(gameObject);
     }
 

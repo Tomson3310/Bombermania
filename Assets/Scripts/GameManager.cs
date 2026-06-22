@@ -35,7 +35,28 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public float basePlayerSpeed;
 
     [Header("Game Over Screen Settings")]
-    public float gameOverDisplayDuration = 4f;
+    public float gameOverDisplayDuration = 5f;
+    public AudioClip gameoverSound;
+    public float gameoverVolume = 0.5f;
+
+    [Header("Game Completed Screen Settings")]
+    public float gameCompletedDisplayDuration = 4f;
+
+    [Header("Bonus Scoring Settings")]
+    public int pointsPerSecondRemaining = 10;
+    public float countdownTickDelay = 0.02f;
+    public float postCountdownDelay = 0.5f;
+    public AudioClip timeTickSound;
+    public float timeTickMaxPitch = 2.5f;
+    public float timeTickVolume = 0.5f;
+
+    [Header("Life Bonus Settings (End Game)")]
+    public int pointsPerLifeRemaining = 5000;
+    public float lifeBonusTickDelay = 0.5f;
+    public float postLifeBonusDelay = 1.0f;
+    public AudioClip lifeTickSound;
+    public float lifeTickPitchStep = 0.3f;
+    public float lifeTickVolume = 0.5f;
 
     public void ClearSavedSession()
     {
@@ -51,7 +72,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void Start()
-    {
+    {        
         UIManager.Instance.UpdateLevel(currentLevel);
         UIManager.Instance.UpdateScore(score);        
     }
@@ -95,11 +116,83 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
+    private System.Collections.IEnumerator LifeBonusSequence()
+    {
+        Debug.Log($"<color=cyan>[GameManager]</color> Rozpoczynam odliczanie bonusu za życia. Pozostało żyć: {savedLives}");
+        float currentPitch = 1f;
+
+        while (savedLives > 0)
+        {
+            savedLives--;
+            score += pointsPerLifeRemaining;
+                        
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdateLives(savedLives);
+                UIManager.Instance.UpdateScore(score);
+            }
+
+            if (AudioManager.Instance != null && lifeTickSound != null)
+            {
+                AudioManager.Instance.PlaySFX(lifeTickSound, lifeTickVolume, currentPitch);
+                currentPitch += lifeTickPitchStep;
+            }
+
+            yield return new WaitForSeconds(lifeBonusTickDelay);
+        }
+                
+        yield return new WaitForSeconds(postLifeBonusDelay);
+                
+        StartCoroutine(GameCompletedSequence());
+    }
+
     public void LoadNextLevel()
     {
-        Debug.Log($"<color=cyan>[GameManager]</color> LoadNextLevel wywołany! Ukończono poziom {currentLevel}.");
+        Debug.Log($"<color=cyan>[GameManager]</color> Zaczynam sekwencję przejścia poziomu {currentLevel}. Odliczam bonus za czas!");
+                
+        isLevelActive = false;                
+        StartCoroutine(TimeBonusSequence());
+    }
 
-        // Save current player stats before loading the next level
+    private System.Collections.IEnumerator TimeBonusSequence()
+    {        
+        int remainingSeconds = Mathf.CeilToInt(levelTimer);
+        int initialSeconds = remainingSeconds;
+        
+        float currentPitch = 1f;
+        float pitchStep = 0f;
+        
+        if (initialSeconds > 0)
+        {
+            pitchStep = (timeTickMaxPitch - 1f) / initialSeconds;
+        }
+
+        while (remainingSeconds > 0)
+        {
+            remainingSeconds--;
+            levelTimer = remainingSeconds;
+                        
+            score += pointsPerSecondRemaining;
+                        
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdateTimerDisplay(remainingSeconds);
+                UIManager.Instance.UpdateScore(score);
+            }
+
+            if (AudioManager.Instance != null && timeTickSound != null)
+            {
+                AudioManager.Instance.PlaySFX(timeTickSound, timeTickVolume, currentPitch);
+                currentPitch += pitchStep;
+            }
+
+
+            yield return new WaitForSeconds(countdownTickDelay);
+        }
+
+        
+        yield return new WaitForSeconds(postCountdownDelay);
+                
         PlayerStats currentStats = FindAnyObjectByType<PlayerStats>();
         if (currentStats != null)
         {
@@ -112,7 +205,7 @@ public class GameManager : MonoBehaviour
             savedPlayerMoveSpeed = currentStats.PlayerMoveSpeed;
 
             hasSavedSession = true;
-            Debug.Log($"<color=cyan>[GameManager]</color> Statystyki gracza pomyślnie zapisane do sejfu przed zmianą poziomu.");
+            Debug.Log($"<color=cyan>[GameManager]</color> Statystyki gracza pomyślnie zapisane do sejfu.");
         }
 
         if (UIManager.Instance != null)
@@ -121,16 +214,17 @@ public class GameManager : MonoBehaviour
         }
 
         currentLevel++;
-        isLevelActive = false;
-
+                
         if (currentLevel - 1 < allLevels.Count)
         {
-            Debug.Log($"<color=cyan>[GameManager]</color> Ładuję scenę dla Poziomu {currentLevel}...");            
+            Debug.Log($"<color=cyan>[GameManager]</color> Ładuję scenę dla Poziomu {currentLevel}...");
             UnityEngine.SceneManagement.SceneManager.LoadScene(1);
         }
         else
         {
-            Debug.Log("<color=yellow>[GameManager]</color> Gratulacje! Przeszedłeś wszystkie poziomy!");
+            Debug.Log("<color=yellow>[GameManager]</color> Gratulacje! Przeszedłeś wszystkie poziomy! Przechodzę do bonusu za życia.");
+            
+            StartCoroutine(LifeBonusSequence());
         }
     }
 
@@ -158,23 +252,27 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("<color=cyan>[GameManager]</color> LevelStartSequence START. Zamrażam poziom (isLevelActive = false).");
         isLevelActive = false;
-        
+                
+        if (AudioManager.Instance != null && AudioManager.Instance.intermissionMusic != null)
+        {
+            AudioManager.Instance.PlayMusic(AudioManager.Instance.intermissionMusic, false);
+        }
+
         int livesToShow = 3;
 
         if (hasSavedSession)
         {
-            // after death or loading a saved game
             livesToShow = savedLives;
         }
         else
-        {            
+        {
             PlayerStats player = FindAnyObjectByType<PlayerStats>();
             if (player != null)
             {
                 livesToShow = player.Lives;
             }
         }
-                
+
         if (UIManager.Instance != null)
         {
             UIManager.Instance.ShowIntermission(currentLevel, livesToShow);
@@ -182,15 +280,19 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("<color=cyan>[GameManager]</color> Ekran kurtyny wyświetlony. Rozpoczynam odliczanie 3 sekund...");
         yield return new WaitForSeconds(3f);
-                
+
         if (UIManager.Instance != null)
         {
             UIManager.Instance.HideIntermission();
         }
 
-        // Starting the level after the intermission
         isLevelActive = true;
-        Debug.Log("<color=cyan>[GameManager]</color> LevelStartSequence KONIEC. Kurtyna zeszła. Gra ożywa (isLevelActive = true)!");
+        Debug.Log("<color=cyan>[GameManager]</color> LevelStartSequence KONIEC. Gra ożywa!");
+                
+        if (AudioManager.Instance != null && AudioManager.Instance.gameplayMusic != null)
+        {
+            AudioManager.Instance.PlayMusic(AudioManager.Instance.gameplayMusic, true);
+        }
     }
 
     public void ResetCurrentLevel()
@@ -253,6 +355,10 @@ public class GameManager : MonoBehaviour
         {
             UIManager.Instance.ShowGameOver();
         }
+        if (AudioManager.Instance != null && gameoverSound != null)
+        {
+            AudioManager.Instance.PlaySFX(gameoverSound, gameoverVolume);
+        }
 
         // Delay
         yield return new WaitForSeconds(gameOverDisplayDuration);
@@ -271,6 +377,34 @@ public class GameManager : MonoBehaviour
         {
             // Death without high score - just return to main menu
             Debug.Log("<color=cyan>[GameManager]</color> Brak rekordu. Wracam do Menu Głównego.");
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        }
+    }
+
+    private System.Collections.IEnumerator GameCompletedSequence()
+    {        
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowGameCompleted();
+        }
+                
+        yield return new WaitForSeconds(gameCompletedDisplayDuration);
+                
+        if (HighScoreManager.IsHighScore(score))
+        {
+            Debug.Log("<color=yellow>[GameManager]</color> Zwycięstwo i nowy rekord! Proszę o NICK.");
+
+            if (UIManager.Instance != null)
+            {                
+                UIManager.Instance.ShowHighScoreInput();
+            }
+        }
+        else
+        {            
+            Debug.Log("<color=cyan>[GameManager]</color> Zwycięstwo, ale brak rekordu. Wracam do Menu Głównego.");
+            ClearSavedSession();
+            uniquePowerUpsInInventory.Clear();
+            currentLevel = 1;
             UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         }
     }

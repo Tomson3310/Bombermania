@@ -82,6 +82,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 934b1cf421add1144bd031b61e83346a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: GameScripts::Key
+  keySpawn: {fileID: 8300000, guid: 45bd88b2d85f1df46a62cef0f1588c7a, type: 3}
+  pickUp: {fileID: 8300000, guid: d7620c64fd44652479dd5412067e2d9d, type: 3}
+  spawnVolume: 0.218
+  pickUpVolume: 0.229
 --- !u!1 &5444120678691514471
 GameObject:
   m_ObjectHideFlags: 0

@@ -250,6 +250,8 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 128
+  plantBombSound: {fileID: 8300000, guid: ffb159a21c8a04135a5616979c828fab, type: 3}
+  plantBombVolume: 0.38
 --- !u!114 &5344310029238175515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,3 +272,5 @@ MonoBehaviour:
   hasBombPass: 0
   playerMoveSpeed: 3
   animator: {fileID: 6314848097755395393}
+  deathSound: {fileID: 8300000, guid: f3f18efe749084644b1d31fed2aed21f, type: 3}
+  deathVolume: 0.059

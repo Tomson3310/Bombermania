@@ -64,13 +64,11 @@ public class PlayerStatsTests
 
         // Create dummy inventory arrays
         uiManager.inventoryIcons = new Image[5];
-        uiManager.inventoryCircles = new GameObject[5];
+        
 
         // FILL THE ARRAYS WITH ACTUAL DUMMY OBJECTS
         for (int i = 0; i < 5; i++)
-        {
-            // Create a GameObject for the circle
-            uiManager.inventoryCircles[i] = new GameObject($"DummyCircle_{i}");
+        {  
 
             // Create a GameObject for the icon and add an Image component to it
             GameObject iconObj = new GameObject($"DummyIcon_{i}");

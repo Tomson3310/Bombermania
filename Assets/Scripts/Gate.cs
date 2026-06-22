@@ -4,8 +4,10 @@ public class Gate : MonoBehaviour
 {
     [Header("Sprites")]
     public Sprite openedGateSprite;
-
+    public AudioClip gateSpawn;
+    [Range(0f, 1f)][SerializeField] private float gateSpawnVolume = 0.5f;
     private SpriteRenderer spriteRenderer;
+    
 
     private void Start()
     {
@@ -15,6 +17,11 @@ public class Gate : MonoBehaviour
         {
             OpenGate();
         }
+        if (AudioManager.Instance != null && gateSpawn != null)
+        {
+            AudioManager.Instance.PlaySFX(gateSpawn, gateSpawnVolume);
+        }
+
     }
 
     public void OpenGate()

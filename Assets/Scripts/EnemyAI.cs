@@ -258,8 +258,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
-
-        // disable all interactions and movement immediately
+                
         currentDirection = Vector2.zero;
         rb.linearVelocity = Vector2.zero;
         if (myCollider != null) myCollider.enabled = false;
