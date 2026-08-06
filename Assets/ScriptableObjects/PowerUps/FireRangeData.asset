@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: GameScripts::FireRadiusPowerUpData
   powerUpName: Fire Range Boost
   uiIcon: {fileID: -1318502557779142857, guid: d1a87738a65a8544b849179fd94a976e, type: 3}
+  isUnique: 0
+  pointsValue: 1000
   radiusIncrease: 1

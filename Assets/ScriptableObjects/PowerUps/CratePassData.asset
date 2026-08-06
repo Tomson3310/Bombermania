@@ -15,3 +15,4 @@ MonoBehaviour:
   powerUpName: Crate Pass
   uiIcon: {fileID: 2447051656490686184, guid: 05540af6d2923a743a5030d42241c959, type: 3}
   isUnique: 1
+  pointsValue: 1000

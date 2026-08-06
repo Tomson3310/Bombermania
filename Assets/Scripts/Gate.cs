@@ -39,6 +39,11 @@ public class Gate : MonoBehaviour
             if (GameManager.Instance != null && GameManager.Instance.hasKey)
             {
                 Debug.Log("LEVEL COMPLETED! Player passed through the open gate!");
+                SpriteRenderer playerSprite = other.GetComponentInChildren<SpriteRenderer>();
+                if (playerSprite != null)
+                {
+                    playerSprite.enabled = false;
+                }
                 GameManager.Instance.LoadNextLevel();
             }
             else

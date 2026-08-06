@@ -35,7 +35,7 @@ public class PlayerStats : MonoBehaviour
     {
 
         Debug.Log("<color=green>[PlayerStats]</color> Start gracza. Inicjalizacja statystyk...");
-        // Logic for loading saved stats from GameManager, if available
+        
         if (GameManager.Instance != null && GameManager.Instance.hasSavedSession)
         {
             lives = GameManager.Instance.savedLives;
@@ -56,12 +56,10 @@ public class PlayerStats : MonoBehaviour
             }
             Debug.Log("<color=green>[PlayerStats]</color> Nowa gra. Używam domyślnych wartości z prefabu.");
         }
-
-        // Very important: Set layer collision rules based on loaded stats
+                
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Crate"), hasCratePass);
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Bomb"), hasBombPass);
-
-        // UI Update
+                
         UIManager.Instance.UpdateLives(lives);
         UIManager.Instance.UpdateStats(maxBombs, fireRange);
     }
@@ -94,28 +92,35 @@ public class PlayerStats : MonoBehaviour
 
     private System.Collections.IEnumerator DeathSequenceCoroutine(DeathType cause)
     {
-        float deathAnimationLength = 1.5f;
+        float deathAnimationLength = 5f;
+        float audioLength = 0f;
 
-        // Choice of animation based on death cause
         string animationStateName = (cause == DeathType.Burn) ? "Player_DeathBurn" : "Player_Death";
 
         if (animator != null)
-        {            
+        {
             animator.Play(animationStateName, -1, 0f);
         }
-
-        // waiting one frame to ensure the animation state is updated before we read its length
+                
         yield return null;
-
+                
         if (animator != null)
-        {           
+        {
             AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
             deathAnimationLength = stateInfo.length;
             Debug.Log($"<color=green>[PlayerStats]</color> Czas trwania animacji {animationStateName}: {deathAnimationLength} sek.");
         }
                 
-        yield return new WaitForSeconds(deathAnimationLength);
+        if (deathSound != null)
+        {
+            audioLength = deathSound.length;
+        }
+                
+        float waitTime = Mathf.Max(deathAnimationLength, audioLength);
 
+        
+        yield return new WaitForSeconds(waitTime + 0.5f);
+                
         if (lives > 0)
         {
             if (GameManager.Instance != null) GameManager.Instance.ResetCurrentLevel();

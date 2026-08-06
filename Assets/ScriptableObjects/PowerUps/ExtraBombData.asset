@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: GameScripts::ExtraBombPowerUpData
   powerUpName: Extra Bomb
   uiIcon: {fileID: -5519254911157023079, guid: ee729440e02d18a4189e3d114de5bc3b, type: 3}
+  isUnique: 0
+  pointsValue: 1000
   maxBombsIncrease: 1

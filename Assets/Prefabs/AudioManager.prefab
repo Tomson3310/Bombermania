@@ -49,9 +49,9 @@ MonoBehaviour:
   musicSource: {fileID: 6053580397062786212}
   sfxSource: {fileID: 1075439081364364833}
   menuMusic: {fileID: 0}
-  intermissionMusic: {fileID: 0}
-  gameplayMusic: {fileID: 0}
-  victoryMusic: {fileID: 0}
+  intermissionMusic: {fileID: 8300000, guid: 1fa2b25feeefb8c448eeac9c6d7bf003, type: 3}
+  gameplayMusic: {fileID: 8300000, guid: 9c19cd2acc8d996459cfd8019b396ab0, type: 3}
+  victoryMusic: {fileID: 8300000, guid: 15694cbaa1fbb4e4894edb0f0cef9677, type: 3}
 --- !u!1 &4400369406089162796
 GameObject:
   m_ObjectHideFlags: 0

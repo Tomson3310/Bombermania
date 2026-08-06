@@ -26,4 +26,4 @@ MonoBehaviour:
   width: 19
   height: 11
   cratesToSpawn: 26
-  timeLimitSeconds: 160
+  timeLimitSeconds: 145

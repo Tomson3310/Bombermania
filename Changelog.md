@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to Semantic Versioning.
 
+## [0.5.2] - 2026-08-06
+
+### Added
+- Complete Music and Jingles system: Added main menu opening music.
+- Contextual Jingles: Added dedicated musical jingles for key events, including Player Death, Level Intermission, and Game Victory.
+
+### Changed
+- Gameplay Music: Updated the main gameplay track.
+- Audio Integration: Hooked up the new music tracks and jingles to their respective game states across core scripts (`GameManager`, `MainMenuController`, `PlayerStats`, `LevelGenerator`, `HighScoreManager`).
+- Prefabs & Scenes: Updated `AudioManager` and `Player` prefabs, as well as `MainLevel` and `MainMenu` scenes to fully support the new audio workflow.
+- Updated various Level and PowerUp ScriptableObjects to reflect final balancing and audio integration for this milestone.
+
+---
+
 ## [0.5.1] - 2026-06-23
 ### Added
 - Centralized `AudioManager` Singleton to handle background music and SFX with scene persistence.

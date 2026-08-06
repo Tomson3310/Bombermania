@@ -15,4 +15,5 @@ MonoBehaviour:
   powerUpName: Move Speed Boost
   uiIcon: {fileID: 6629503220586895099, guid: 846ab954b3c854f48881ae7f03cacc10, type: 3}
   isUnique: 1
+  pointsValue: 1000
   speedMultiplier: 1.5

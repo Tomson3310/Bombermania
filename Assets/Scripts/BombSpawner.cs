@@ -36,6 +36,8 @@ public class BombSpawner : MonoBehaviour
 
     private void SpawnBomb()
     {
+        if (GameManager.Instance != null && !GameManager.Instance.isLevelActive) return;
+
         if (bombPrefab == null || playerStats == null) return;
         if (currentBombs >= playerStats.MaxBombs) return;
 
@@ -68,6 +70,8 @@ public class BombSpawner : MonoBehaviour
 
     private void DetonateOldestBomb()
     {
+        if (GameManager.Instance != null && !GameManager.Instance.isLevelActive) return;
+
         if (!playerStats.HasDetonator) return;
 
         // Remove bombs destroyed by chain reactions

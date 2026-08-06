@@ -2799,9 +2799,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1045280049539845895, guid: 4f86b8b6e6de9a846bb9cf65f885aadd, type: 3}
+      propertyPath: victoryMusic
+      value: 
+      objectReference: {fileID: 8300000, guid: 15694cbaa1fbb4e4894edb0f0cef9677, type: 3}
+    - target: {fileID: 1045280049539845895, guid: 4f86b8b6e6de9a846bb9cf65f885aadd, type: 3}
       propertyPath: gameplayMusic
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 8300000, guid: 9c19cd2acc8d996459cfd8019b396ab0, type: 3}
+    - target: {fileID: 1045280049539845895, guid: 4f86b8b6e6de9a846bb9cf65f885aadd, type: 3}
+      propertyPath: intermissionMusic
+      value: 
+      objectReference: {fileID: 8300000, guid: 1fa2b25feeefb8c448eeac9c6d7bf003, type: 3}
     - target: {fileID: 4388665298197382883, guid: 4f86b8b6e6de9a846bb9cf65f885aadd, type: 3}
       propertyPath: m_Name
       value: AudioManager

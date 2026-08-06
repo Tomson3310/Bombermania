@@ -65,10 +65,10 @@ public class GameManager : MonoBehaviour
     }
 
     private void Awake()
-    {
+    {        
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
-        DontDestroyOnLoad(gameObject); // VERY IMPORTANT: Keeps the GameManager alive across scene loads
+        DontDestroyOnLoad(gameObject);       
     }
 
     private void Start()
@@ -82,8 +82,7 @@ public class GameManager : MonoBehaviour
         if (isLevelActive)
         {
             levelTimer -= Time.deltaTime;
-
-            // Update timer display with ceiling to avoid showing 0.9s as 0
+           
             UIManager.Instance.UpdateTimerDisplay(Mathf.CeilToInt(levelTimer));
 
             if (levelTimer <= 0f)
@@ -102,7 +101,7 @@ public class GameManager : MonoBehaviour
 
     public LevelData GetCurrentLevelData()
     {
-        int listIndex = currentLevel - 1; // Level 1 is at index 0
+        int listIndex = currentLevel - 1;
         if (listIndex >= 0 && listIndex < allLevels.Count)
         {
             activePowerUpPool = new List<PowerUpData>(allLevels[listIndex].PowerUpsToSpawn);
@@ -148,11 +147,38 @@ public class GameManager : MonoBehaviour
 
     public void LoadNextLevel()
     {
-        Debug.Log($"<color=cyan>[GameManager]</color> Zaczynam sekwencję przejścia poziomu {currentLevel}. Odliczam bonus za czas!");
+        Debug.Log($"<color=cyan>[GameManager]</color> Zaczynam sekwencję przejścia poziomu {currentLevel}.");
                 
-        isLevelActive = false;                
+        isLevelActive = false;
+                
+        StartCoroutine(LevelCompletedSequence());
+    }
+
+    private System.Collections.IEnumerator LevelCompletedSequence()
+    {
+        float musicDuration = 0f;
+               
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+
+            if (AudioManager.Instance.victoryMusic != null)
+            {
+                AudioManager.Instance.PlayMusic(AudioManager.Instance.victoryMusic, false);
+                
+                musicDuration = AudioManager.Instance.victoryMusic.length;
+            }
+        }
+                
+        if (musicDuration > 0f)
+        {
+            yield return new WaitForSeconds(musicDuration);
+        }
+               
+        Debug.Log($"<color=cyan>[GameManager]</color> Muzyka zwycięstwa zakończona. Odliczam bonus za czas!");
         StartCoroutine(TimeBonusSequence());
     }
+
 
     private System.Collections.IEnumerator TimeBonusSequence()
     {        
@@ -279,7 +305,7 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log("<color=cyan>[GameManager]</color> Ekran kurtyny wyświetlony. Rozpoczynam odliczanie 3 sekund...");
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(4f);
 
         if (UIManager.Instance != null)
         {
@@ -349,8 +375,7 @@ public class GameManager : MonoBehaviour
     }
 
     private System.Collections.IEnumerator GameOverSequence()
-    {
-        // Game Over Screen
+    {        
         if (UIManager.Instance != null)
         {
             UIManager.Instance.ShowGameOver();
@@ -359,11 +384,9 @@ public class GameManager : MonoBehaviour
         {
             AudioManager.Instance.PlaySFX(gameoverSound, gameoverVolume);
         }
-
-        // Delay
+                
         yield return new WaitForSeconds(gameOverDisplayDuration);
-
-        // Check for high score
+                
         if (HighScoreManager.IsHighScore(score))
         {
             Debug.Log("<color=yellow>[GameManager]</color> Nowy rekord! Zatrzymuję powrót do menu i proszę o NICK.");
@@ -374,8 +397,7 @@ public class GameManager : MonoBehaviour
             }                        
         }
         else
-        {
-            // Death without high score - just return to main menu
+        {            
             Debug.Log("<color=cyan>[GameManager]</color> Brak rekordu. Wracam do Menu Głównego.");
             UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         }
@@ -408,16 +430,14 @@ public class GameManager : MonoBehaviour
             UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         }
     }
-
-    // On click of "Save" button in the high score input UI
+        
     public void SaveHighScoreAndExit(string playerName)
     {        
         HighScoreManager.AddScore(playerName, score);
         
         PlayerPrefs.SetInt("ShowLeaderboard", 1);
         PlayerPrefs.Save();
-
-        // Back to main menu
+                
         Debug.Log("<color=cyan>[GameManager]</color> Zapisano rekord. Przeładowuję do tablicy wyników w Menu.");
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }

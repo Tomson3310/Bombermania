@@ -148,7 +148,7 @@ public class LevelGenerator : MonoBehaviour
         {
             for (int i = 0; i < config.count; i++)
             {
-                if (safeEnemySpaces.Count == 0) break; // no more space for enemies
+                if (safeEnemySpaces.Count == 0) break;
 
                 int randomIndex = Random.Range(0, safeEnemySpaces.Count);
                 Vector2 enemyPos = safeEnemySpaces[randomIndex];

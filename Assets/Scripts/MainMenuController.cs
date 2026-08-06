@@ -7,7 +7,12 @@ public class MainMenuController : MonoBehaviour
     public LeaderboardUI leaderboardUI;
 
     private void Start()
-    {        
+    {
+        if (AudioManager.Instance != null && AudioManager.Instance.menuMusic != null)
+        {
+            AudioManager.Instance.PlayMusic(AudioManager.Instance.menuMusic, true);
+        }
+
         if (PlayerPrefs.GetInt("ShowLeaderboard", 0) == 1)
         {            
             PlayerPrefs.SetInt("ShowLeaderboard", 0);

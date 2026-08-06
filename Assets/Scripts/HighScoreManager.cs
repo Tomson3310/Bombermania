@@ -100,4 +100,23 @@ public static class HighScoreManager
         }
         return data;
     }
+
+    // ==========================================
+    // DEWELOPERSKIE CZYSZCZENIE LISTY WYNIKÓW
+    // ==========================================
+
+    //public static void ClearLeaderboard()
+    //{
+    //    if (PlayerPrefs.HasKey(LEADERBOARD_KEY))
+    //    {
+    //        PlayerPrefs.DeleteKey(LEADERBOARD_KEY);
+    //        PlayerPrefs.Save();
+    //        Debug.Log("<color=red>[HighScoreManager]</color> Tablica wyników została wyczyszczona!");
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("<color=yellow>[HighScoreManager]</color> Tablica wyników jest już pusta (brak klucza).");
+    //    }
+    //}
+
 }

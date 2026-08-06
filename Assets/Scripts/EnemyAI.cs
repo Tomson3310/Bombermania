@@ -21,8 +21,7 @@ public class EnemyAI : MonoBehaviour
         }
                 
         animator = GetComponentInChildren<Animator>();
-
-        // CRITICAL: Setting the Animator Controller from the EnemyData SO
+                
         if (animator != null && data.animatorController != null)
         {
             animator.runtimeAnimatorController = data.animatorController;
@@ -53,8 +52,7 @@ public class EnemyAI : MonoBehaviour
     }
 
     private void FixedUpdate()
-    {
-        // If the level isn't active (e.g. during transitions or after player death), don't move
+    {        
         if (GameManager.Instance != null && !GameManager.Instance.isLevelActive)
         {
             rb.linearVelocity = Vector2.zero;
@@ -101,13 +99,11 @@ public class EnemyAI : MonoBehaviour
     private void UpdateAnimations()
     {
         if (animator == null || isDead) return;
-
-        // while not moving
+                
         if (currentDirection == Vector2.zero)
         {
             animator.SetFloat("Speed", 0f);
-        }
-        // while moving
+        }        
         else
         {
             animator.SetFloat("Speed", 1f);
@@ -264,8 +260,7 @@ public class EnemyAI : MonoBehaviour
         if (myCollider != null) myCollider.enabled = false;
         
         if (animator != null)
-        {
-            // WARNING: Works only with correct name of the animation in Animator Controller
+        {            
             animator.Play("Death", -1, 0f);
         }
 
@@ -273,11 +268,10 @@ public class EnemyAI : MonoBehaviour
     }
 
     private IEnumerator DeathSequenceCoroutine()
-    {
-        // waiting one frame to ensure the death animation starts properly and we can read its length
+    {        
         yield return null;
 
-        float waitTime = 1f; // deafault value (just in case)
+        float waitTime = 1f;
         if (animator != null)
         {
             AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
