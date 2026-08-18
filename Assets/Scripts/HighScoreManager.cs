@@ -25,7 +25,7 @@ public class LeaderboardData
 // class representing the high score manager
 public static class HighScoreManager
 {
-    private const string LEADERBOARD_KEY = "Bombermania_Leaderboard";
+    private const string LEADERBOARD_KEY = "Bombermania_Leaderboard_v3";
     private const int MAX_ENTRIES = 10;
 
     public static LeaderboardData GetLeaderboard()

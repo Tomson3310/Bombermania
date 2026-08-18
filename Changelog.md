@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to Semantic Versioning.
 
+## [0.7.0] - 2026-08-18
+### Added
+- Pause Menu: Fully functional pause system accessible via ESC, freezing all game logic and audio.
+- Interactive Help Screen: Added a panel detailing power-up icons and mechanics.
+- Persistent Audio Options: Implemented volume control for Music and SFX in both Main Menu and Pause Menu. Settings are saved to disk using `PlayerPrefs`.
+- UI Juice: Game timer text now turns red at 25 seconds remaining and dynamically pulsates during the final 10 seconds.
+
+### Fixed
+- Scene Transition Crash: Resolved `NullReferenceException` in `GameManager.Update()` caused by lingering level logic after quitting to the Main Menu.
+- Audio Ghosting: Fixed an issue where delayed level-start coroutines would override the Main Menu music after the player exited a paused game early.
+
+---
+
+## [0.6.0] - 2026-08-11
+### Added
+- Level Variety: Implemented new `LevelData` ScriptableObjects with unique, diverse layouts and escalating difficulty curves.
+- Advanced Level Generation: Updated the grid generation system to correctly parse and build the new distinct level architectures.
+
+---
+
 ## [0.5.2] - 2026-08-06
 
 ### Added

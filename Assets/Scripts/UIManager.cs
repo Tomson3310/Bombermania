@@ -17,6 +17,15 @@ public class UIManager : MonoBehaviour
     public Sprite keyColorSprite;
     public Sprite powerUpColorSprite;
 
+    [Header("Timer Effects")]
+    public Color normalTimerColor = Color.green;
+    public Color warningTimerColor = Color.red;
+    public float pulseSpeed = 4f;
+    public float pulseScale = 0.2f;
+
+    private bool isPulsating = false;
+    private Vector3 originalTimeTextScale;
+
     [Header("Bottom Panel - Stats")]
     public TMP_Text fireRadiusText;
     public TMP_Text maxBombsText;
@@ -48,6 +57,22 @@ public class UIManager : MonoBehaviour
             return;
         }
         Instance = this;
+
+        if (timeText != null)
+        {            
+            originalTimeTextScale = timeText.transform.localScale;
+            timeText.color = normalTimerColor;
+        }
+    }
+
+    private void Update()
+    {        
+        if (isPulsating && timeText != null)
+        {            
+            float currentScale = 1f + Mathf.PingPong(Time.time * pulseSpeed, pulseScale);
+
+            timeText.transform.localScale = originalTimeTextScale * currentScale;
+        }
     }
 
     // --- TOP PANEL ---
@@ -70,8 +95,33 @@ public class UIManager : MonoBehaviour
         int minutes = timeInSeconds / 60;
         int seconds = timeInSeconds % 60;
         timeText.text = string.Format("Time: {0:00}:{1:00}", minutes, seconds);
+
+        // Change color to warning when time is 35 seconds or less
+        if (timeInSeconds <= 35)
+        {
+            timeText.color = warningTimerColor;
+        }
+        else
+        {
+            timeText.color = normalTimerColor;
+        }
+
+        // Activate pulsating effect when time is 10 seconds or less
+        if (timeInSeconds <= 10 && timeInSeconds > 0)
+        {
+            isPulsating = true;
+        }
+        else
+        {
+            isPulsating = false;
+            
+            if (timeText != null)
+            {
+                timeText.transform.localScale = originalTimeTextScale;
+            }
+        }
     }
-        
+
     public void ShowIntermission(int level, int lives)
     {
         intermissionPanel.SetActive(true);

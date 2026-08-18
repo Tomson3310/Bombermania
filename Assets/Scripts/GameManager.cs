@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public int enemyCount = 0;
     public float levelTimer = 0f;
     public bool isLevelActive = false;
+    private System.DateTime lastFrameTime;
 
     [Header("Player State")]
     public bool hasKey = false;
@@ -72,17 +73,28 @@ public class GameManager : MonoBehaviour
     }
 
     private void Start()
-    {        
+    {
+        QualitySettings.vSyncCount = 1;
+        Application.targetFrameRate = 60;
+
         UIManager.Instance.UpdateLevel(currentLevel);
-        UIManager.Instance.UpdateScore(score);        
+        UIManager.Instance.UpdateScore(score);
+
+        lastFrameTime = System.DateTime.UtcNow;
     }
 
     private void Update()
     {
+        // Count the real time passed since the last frame
+        System.DateTime now = System.DateTime.UtcNow;
+        float realDelta = (float)(now - lastFrameTime).TotalSeconds;
+        lastFrameTime = now;
+
         if (isLevelActive)
         {
-            levelTimer -= Time.deltaTime;
-           
+            // Update the level timer based on real time and the current time scale
+            levelTimer -= realDelta * Time.timeScale;
+
             UIManager.Instance.UpdateTimerDisplay(Mathf.CeilToInt(levelTimer));
 
             if (levelTimer <= 0f)
@@ -314,7 +326,7 @@ public class GameManager : MonoBehaviour
 
         isLevelActive = true;
         Debug.Log("<color=cyan>[GameManager]</color> LevelStartSequence KONIEC. Gra ożywa!");
-                
+
         if (AudioManager.Instance != null && AudioManager.Instance.gameplayMusic != null)
         {
             AudioManager.Instance.PlayMusic(AudioManager.Instance.gameplayMusic, true);
