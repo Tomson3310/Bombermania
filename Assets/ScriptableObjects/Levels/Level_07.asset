@@ -19,6 +19,7 @@ MonoBehaviour:
     count: 5
   - enemyProfile: {fileID: 11400000, guid: 2867765c8ee9509468cc7b3595073a0f, type: 2}
     count: 2
+  layoutType: 4
   powerUpsToSpawn:
   - {fileID: 11400000, guid: 9147cc816abfd284498d5b6d35ab4346, type: 2}
   - {fileID: 11400000, guid: dc58185b3a93b5b4da71087d555366f1, type: 2}
@@ -30,4 +31,4 @@ MonoBehaviour:
   width: 25
   height: 11
   cratesToSpawn: 40
-  timeLimitSeconds: 145
+  timeLimitSeconds: 143

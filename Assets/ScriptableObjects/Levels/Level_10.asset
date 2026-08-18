@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: GameScripts::LevelData
   enemiesToSpawn:
   - enemyProfile: {fileID: 11400000, guid: 63f9a345103e36f41bf5850d88af5c2f, type: 2}
-    count: 10
+    count: 8
   - enemyProfile: {fileID: 11400000, guid: ce962136074880046976ef6d7529448c, type: 2}
-    count: 10
+    count: 8
   - enemyProfile: {fileID: 11400000, guid: 2867765c8ee9509468cc7b3595073a0f, type: 2}
-    count: 10
+    count: 8
+  layoutType: 4
   powerUpsToSpawn:
   - {fileID: 11400000, guid: 9147cc816abfd284498d5b6d35ab4346, type: 2}
   - {fileID: 11400000, guid: dc58185b3a93b5b4da71087d555366f1, type: 2}
@@ -30,4 +31,4 @@ MonoBehaviour:
   width: 27
   height: 11
   cratesToSpawn: 70
-  timeLimitSeconds: 145
+  timeLimitSeconds: 143
