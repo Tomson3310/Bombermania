@@ -28,6 +28,8 @@ public class AudioManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        LoadVolumeSettings();
     }
         
     public void PlaySFX(AudioClip clip, float volume = 1f, float pitch = 1f)
@@ -65,5 +67,41 @@ public class AudioManager : MonoBehaviour
         {
             musicSource.Stop();
         }
+    }
+
+    // --- Volume Control ---
+    private void LoadVolumeSettings()
+    {
+        float savedMusicVol = PlayerPrefs.GetFloat("MusicVolume", 1f);
+        float savedSFXVol = PlayerPrefs.GetFloat("SFXVolume", 1f);
+
+        SetMusicVolume(savedMusicVol);
+        SetSFXVolume(savedSFXVol);
+    }
+    public void SetMusicVolume(float volume)
+    {
+        if (musicSource != null)
+        {
+            musicSource.volume = Mathf.Clamp01(volume);
+            PlayerPrefs.SetFloat("MusicVolume", musicSource.volume);
+        }
+    }
+    public void SetSFXVolume(float volume)
+    {
+        if (sfxSource != null)
+        {
+            sfxSource.volume = Mathf.Clamp01(volume);
+            PlayerPrefs.SetFloat("SFXVolume", sfxSource.volume);
+        }
+    }
+    public float GetMusicVolume()
+    {
+        if (musicSource != null) return musicSource.volume;
+        return 1f;
+    }
+    public float GetSFXVolume()
+    {
+        if (sfxSource != null) return sfxSource.volume;
+        return 1f;
     }
 }
